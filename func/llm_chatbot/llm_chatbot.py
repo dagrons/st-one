@@ -36,7 +36,7 @@ def get_model_tokenizer(model_name):
     if model_name in ['chatglm3-6b']:
         model = AutoModel.from_pretrained(MODEL_PATH[model_name], trust_remote_code=True, load_in_4bit=True,
                                           device_map="auto").eval()
-    elif model_name in ['Qwen1.5-7b-chat', 'Qwen1.5-1.8b-chat']:
+    elif model_name in ['Qwen1.5-7b-chat', 'Qwen1.5-1.8b-chat', 'Qwen1.5-14b-chat']:
         model = AutoModelForCausalLM.from_pretrained(MODEL_PATH[model_name], trust_remote_code=True, load_in_4bit=True,
                                                      device_map="auto").eval()
 
