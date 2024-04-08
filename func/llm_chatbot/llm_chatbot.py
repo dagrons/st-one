@@ -1,3 +1,4 @@
+import shutil
 import uuid
 from pathlib import Path
 from typing import Optional, List, Any
@@ -20,11 +21,13 @@ from langchain_text_splitters import RecursiveCharacterTextSplitter
 from tqdm import tqdm
 from transformers import AutoModel, AutoTokenizer, AutoModelForCausalLM
 
-from settings import PERSISTENT_DIRECTORY, KG_DATA_PATH, EMBEDDING_PATH, MODEL_PATH
+from settings import PERSISTENT_DIRECTORY, KG_DATA_PATH, EMBEDDING_PATH, MODEL_PATH, KG_PROCESSED_DATA_PATH
 
 module_path = Path('').resolve()
 if not PERSISTENT_DIRECTORY.exists():
     PERSISTENT_DIRECTORY.mkdir()
+if not KG_PROCESSED_DATA_PATH.exists():
+    KG_PROCESSED_DATA_PATH.mkdir()
 
 
 @st.cache_resource
@@ -98,7 +101,6 @@ def find_kg_files(folder_path):
 
 def get_text(dir_path):
     file_lst = find_kg_files(dir_path)
-    print(file_lst)
     docs = []
     for one_file in tqdm(file_lst):
         file_type = one_file.split('.')[-1]
@@ -113,6 +115,7 @@ def get_text(dir_path):
         else:
             continue
         docs.extend(loader.load())
+        shutil.move(one_file, KG_PROCESSED_DATA_PATH)
     return docs
 
 
@@ -120,15 +123,16 @@ def get_text(dir_path):
 def create_vectordb():
     docs = get_text(KG_DATA_PATH)
 
-    text_splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=150)  # 分块大小，块重叠长度
-    split_docs = text_splitter.split_documents(docs)
-
     embeddings = HuggingFaceEmbeddings(
         model_name=str(EMBEDDING_PATH))
-
-    vectordb = Chroma.from_documents(documents=split_docs, embedding=embeddings,
-                                     persist_directory=str(PERSISTENT_DIRECTORY))
-    vectordb.persist()
+    if len(docs) != 0:
+        text_splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=150)  # 分块大小，块重叠长度
+        split_docs = text_splitter.split_documents(docs)
+        vectordb = Chroma.from_documents(documents=split_docs, embedding=embeddings,
+                                         persist_directory=str(PERSISTENT_DIRECTORY))
+        vectordb.persist()
+    else:
+        vectordb = Chroma(persist_directory=str(PERSISTENT_DIRECTORY), embedding_function=embeddings)
     return vectordb
 
 

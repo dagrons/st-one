@@ -3,6 +3,7 @@ from pathlib import Path
 PERSISTENT_DIRECTORY = Path('D:') / 'vectordb'
 EMBEDDING_PATH = Path("D:") / 'paraphrase-MiniLM-L6-v2'
 KG_DATA_PATH = Path('D:') / 'kg_data'
+KG_PROCESSED_DATA_PATH = Path("D:") / 'kg_processed_data'
 MODEL_PATH = {
     'Qwen1.5-1.8b-chat': Path("D:").resolve() / 'Qwen1.5-1.8B-Chat',
     'chatglm3-6b': Path("D:").resolve() / 'chatglm3-6b',
