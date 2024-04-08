@@ -33,9 +33,9 @@ def get_model_tokenizer(model_name):
     if model_name in ['chatglm3-6b']:
         model = AutoModel.from_pretrained(MODEL_PATH[model_name], trust_remote_code=True, load_in_4bit=True,
                                           device_map="auto").eval()
-    elif model_name == 'Qwen1.5-7b-chat':
-        model = AutoModelForCausalLM.from_pretrained(MODEL_PATH[model_name], trust_remote_code=True, load_in_4bit=True,
-                                                     device_map="auto").eval()
+    elif model_name in ['Qwen1.5-7b-chat', 'Qwen1.5-1.8b-chat']:
+        model = AutoModelForCausalLM.from_pretrained(MODEL_PATH[model_name], trust_remote_code=True,
+                                                     device_map="cpu").eval()
 
         # add chat method to model
         def chat(tok, ques, history=[], **kw):
@@ -43,6 +43,7 @@ def get_model_tokenizer(model_name):
                 history + [{'role': 'user', 'content': ques}],
                 add_generation_prompt=1,
             )
+            kw['max_new_tokens'] = 512
             oids = model.generate(
                 inputs=torch.tensor([iids]).to(model.device),
                 **(model.generation_config.to_dict() | kw),
@@ -52,7 +53,7 @@ def get_model_tokenizer(model_name):
                 oids = oids[:-1]
             ans = tok.decode(oids)
             history.append({'role': 'assistant', 'content': ans})
-            return ans
+            return ans, history
 
         model.chat = chat
     else:
@@ -131,6 +132,14 @@ def create_vectordb():
 
 
 @st.cache_resource
+def load_vectordb():
+    embeddings = HuggingFaceEmbeddings(
+        model_name=str(EMBEDDING_PATH))
+    vectordb = Chroma(persist_directory=str(PERSISTENT_DIRECTORY), embedding_function=embeddings)
+    return vectordb
+
+
+@st.cache_resource
 def create_memory(session_id):
     mem = ConversationBufferMemory(memory_key='history', input_key='question')
     return mem
@@ -144,7 +153,7 @@ def create_qa_chain(model_name, session_id, k=4, lambda_mult=0.25):
     问题: {question}     
     有用的回答:"""
     QA_CHAIN_PROMPT = PromptTemplate(input_variables=["context", "history", "question"], template=template)
-    vectordb = create_vectordb()
+    vectordb = load_vectordb()
     mem = create_memory(session_id)
     qa_chain = RetrievalQA.from_chain_type(llm=get_llm(model_name),
                                            retriever=vectordb.as_retriever(search_type="mmr", search_kwargs={'k': k,
