@@ -19,7 +19,7 @@ from langchain_text_splitters import RecursiveCharacterTextSplitter
 from tqdm import tqdm
 from transformers import AutoModel, AutoTokenizer, AutoModelForCausalLM
 
-from settings import PERSISTENT_DIRECTORY, DATA_PATH, EMBEDDING_PATH, MODEL_PATH
+from settings import PERSISTENT_DIRECTORY, KG_DATA_PATH, EMBEDDING_PATH, MODEL_PATH
 
 module_path = Path('').resolve()
 if not PERSISTENT_DIRECTORY.exists():
@@ -114,7 +114,7 @@ def get_text(dir_path):
 
 @st.cache_resource
 def create_vectordb():
-    docs = get_text(DATA_PATH)
+    docs = get_text(KG_DATA_PATH)
 
     text_splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=150)  # 分块大小，块重叠长度
     split_docs = text_splitter.split_documents(docs)
