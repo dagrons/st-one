@@ -8,6 +8,7 @@ import torch
 from langchain.chains.retrieval_qa.base import RetrievalQA
 from langchain.memory import ConversationBufferMemory
 from langchain_community.document_loaders.markdown import UnstructuredMarkdownLoader
+from langchain_community.document_loaders.pdf import UnstructuredPDFLoader
 from langchain_community.document_loaders.unstructured import UnstructuredFileLoader
 from langchain_community.document_loaders.word_document import UnstructuredWordDocumentLoader
 from langchain_community.embeddings.huggingface import HuggingFaceEmbeddings
@@ -86,16 +87,16 @@ def get_llm(model_name):
     return llm
 
 
-def find_txt_md_docx_files(folder_path):
+def find_kg_files(folder_path):
     files = []
-    for suffix in ["md", "txt", "docx"]:
+    for suffix in ["md", "txt", "docx", 'pdf']:
         for fpath in folder_path.glob(f"**/*.{suffix}"):
             files.append(str(fpath))
     return files
 
 
 def get_text(dir_path):
-    file_lst = find_txt_md_docx_files(dir_path)
+    file_lst = find_kg_files(dir_path)
     print(file_lst)
     docs = []
     for one_file in tqdm(file_lst):
@@ -106,6 +107,8 @@ def get_text(dir_path):
             loader = UnstructuredFileLoader(one_file)
         elif file_type == 'docx':
             loader = UnstructuredWordDocumentLoader(one_file)
+        elif file_type == 'pdf':
+            loader = UnstructuredPDFLoader(one_file, strategy="fast")
         else:
             continue
         docs.extend(loader.load())
