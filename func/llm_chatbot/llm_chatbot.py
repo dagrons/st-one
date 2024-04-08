@@ -128,14 +128,7 @@ def create_vectordb():
 
     vectordb = Chroma.from_documents(documents=split_docs, embedding=embeddings,
                                      persist_directory=str(PERSISTENT_DIRECTORY))
-    return vectordb
-
-
-@st.cache_resource
-def load_vectordb():
-    embeddings = HuggingFaceEmbeddings(
-        model_name=str(EMBEDDING_PATH))
-    vectordb = Chroma(persist_directory=str(PERSISTENT_DIRECTORY), embedding_function=embeddings)
+    vectordb.persist()
     return vectordb
 
 
@@ -153,7 +146,7 @@ def create_qa_chain(model_name, session_id, k=4, lambda_mult=0.25):
     问题: {question}     
     有用的回答:"""
     QA_CHAIN_PROMPT = PromptTemplate(input_variables=["context", "history", "question"], template=template)
-    vectordb = load_vectordb()
+    vectordb = create_vectordb()
     mem = create_memory(session_id)
     qa_chain = RetrievalQA.from_chain_type(llm=get_llm(model_name),
                                            retriever=vectordb.as_retriever(search_type="mmr", search_kwargs={'k': k,
@@ -184,17 +177,15 @@ def llm_chatbot_page():
     with col1:
         clear = st.button("清除会话", type="primary")
     with col2:
-        show_ref = st.checkbox("展示引用")
+        reload_kg = st.button("重载知识库", type="primary")
     with col3:
-        use_kg = st.checkbox("检索参数配置")
-    if use_kg:
-        col1, col2 = st.columns(2)
-        with col1:
-            k = st.slider("k", 0, 10)
-        with col2:
-            lambda_mult = st.slider("lambda_mult", 0., 1.)
+        show_ref = st.checkbox("展示引用")
     placeholder = st.empty()
     prompt_text = st.chat_input('Chat with LLM', key="chat_input")
+
+    if reload_kg:
+        create_vectordb.clear()
+        create_qa_chain.clear()
 
     if 'session_id' not in st.session_state:
         st.session_state.session_id = uuid.uuid4()

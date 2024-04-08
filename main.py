@@ -22,8 +22,7 @@ if __name__ == "__main__":
             "func": llm_chatbot_page
         },
         "待办列表": {
-            "func":
-                todolist_page
+            "func": todolist_page
         },
         "信息填报": {
             "func": gather_info_page,
