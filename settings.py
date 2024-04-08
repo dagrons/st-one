@@ -8,4 +8,9 @@ MODEL_PATH = {
     'minicpm-2b-dpo-fp16': Path("D:").resolve() / 'MiniCPM-2B-dpo-fp16',
     'Qwen1.5-7b-chat': Path("D:").resolve() / 'Qwen1.5-7B-Chat',
 }
+LOG_PATH = Path("D:") / 'demo_log.csv'
+TABLE_PATH = Path("D:") / 'demo_table.csv'
+TODOCSV_PATH = Path("D:") / 'demo_todolist.csv'
+
+
 
