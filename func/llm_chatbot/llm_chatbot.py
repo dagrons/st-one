@@ -34,8 +34,8 @@ def get_model_tokenizer(model_name):
         model = AutoModel.from_pretrained(MODEL_PATH[model_name], trust_remote_code=True, load_in_4bit=True,
                                           device_map="auto").eval()
     elif model_name in ['Qwen1.5-7b-chat', 'Qwen1.5-1.8b-chat']:
-        model = AutoModelForCausalLM.from_pretrained(MODEL_PATH[model_name], trust_remote_code=True,
-                                                     device_map="cpu").eval()
+        model = AutoModelForCausalLM.from_pretrained(MODEL_PATH[model_name], trust_remote_code=True, load_in_4bit=True,
+                                                     device_map="auto").eval()
 
         # add chat method to model
         def chat(tok, ques, history=[], **kw):
