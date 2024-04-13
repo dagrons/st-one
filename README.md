@@ -1,5 +1,7 @@
 # TODO
 
+- ConversationalRetrievalChain
+- m3e-base
 - 如何实现高并发
 
 # 离线部署清单
