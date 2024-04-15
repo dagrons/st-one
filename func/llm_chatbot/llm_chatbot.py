@@ -1,3 +1,4 @@
+import platform
 import shutil
 import uuid
 from pathlib import Path
@@ -6,7 +7,7 @@ from typing import Optional, List, Any
 import pynvml
 import streamlit as st
 import torch
-from langchain.chains.retrieval_qa.base import RetrievalQA
+from langchain.chains.conversational_retrieval.base import ConversationalRetrievalChain
 from langchain.memory import ConversationBufferMemory
 from langchain_community.document_loaders.markdown import UnstructuredMarkdownLoader
 from langchain_community.document_loaders.pdf import UnstructuredPDFLoader
@@ -16,7 +17,6 @@ from langchain_community.embeddings.huggingface import HuggingFaceEmbeddings
 from langchain_community.vectorstores.chroma import Chroma
 from langchain_core.callbacks import CallbackManagerForLLMRun
 from langchain_core.language_models import LLM
-from langchain_core.prompts import PromptTemplate
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from tqdm import tqdm
 from transformers import AutoModel, AutoTokenizer, AutoModelForCausalLM
@@ -34,13 +34,10 @@ if not KG_PROCESSED_DATA_PATH.exists():
 def get_model_tokenizer(model_name):
     tokenizer = AutoTokenizer.from_pretrained(MODEL_PATH[model_name], trust_remote_code=True)
     if model_name in ['chatglm3-6b']:
-        model = AutoModel.from_pretrained(MODEL_PATH[model_name], trust_remote_code=True, load_in_4bit=True,
-                                          device_map="auto").eval()
-    elif model_name in ['Qwen1.5-7b-chat', 'Qwen1.5-1.8b-chat', 'Qwen1.5-14b-chat']:
-        model = AutoModelForCausalLM.from_pretrained(MODEL_PATH[model_name], trust_remote_code=True, load_in_4bit=True,
-                                                     device_map="auto").eval()
-
-        # add chat method to model
+        model = AutoModel.from_pretrained(MODEL_PATH[model_name], trust_remote_code=True, device_map="auto").eval()
+    elif model_name in ['Qwen1.5-0.5b-chat', 'Qwen1.5-7b-chat', 'Qwen1.5-1.8b-chat', 'Qwen1.5-14b-chat']:
+        model = AutoModelForCausalLM.from_pretrained(MODEL_PATH[model_name], trust_remote_code=True,
+                                                     device_map="mps").eval()
         def chat(tok, ques, history=[], **kw):
             iids = tok.apply_chat_template(
                 history + [{'role': 'user', 'content': ques}],
@@ -61,7 +58,7 @@ def get_model_tokenizer(model_name):
         model.chat = chat
     else:
         model = AutoModelForCausalLM.from_pretrained(MODEL_PATH[model_name], trust_remote_code=True,
-                                                     device_map="cpu").eval()
+                                                     device_map="mps").eval()
     return model, tokenizer
 
 
@@ -138,26 +135,20 @@ def create_vectordb():
 
 @st.cache_resource
 def create_memory(session_id):
-    mem = ConversationBufferMemory(memory_key='history', input_key='question')
+    mem = ConversationBufferMemory(memory_key='chat_history', output_key='answer', return_messages=True)
     return mem
 
 
 @st.cache_resource
 def create_qa_chain(model_name, session_id, k=4, lambda_mult=0.25):
-    template = """使用以下上下文和历史会话来回答最后的问题。如果你不知道答案，就说你不知道，不要试图编造答案。尽量使答案简明扼要。总是在回答的最后说“谢谢你的提问！”。
-    上下文: {context}
-    历史会话: {history}
-    问题: {question}     
-    有用的回答:"""
-    QA_CHAIN_PROMPT = PromptTemplate(input_variables=["context", "history", "question"], template=template)
     vectordb = create_vectordb()
     mem = create_memory(session_id)
-    qa_chain = RetrievalQA.from_chain_type(llm=get_llm(model_name),
-                                           retriever=vectordb.as_retriever(search_type="mmr", search_kwargs={'k': k,
-                                                                                                             'lambda_mult': lambda_mult}),
-                                           return_source_documents=True,
-                                           chain_type_kwargs={"prompt": QA_CHAIN_PROMPT,
-                                                              "memory": mem})
+    qa_chain = ConversationalRetrievalChain.from_llm(llm=get_llm(model_name),
+                                                     retriever=vectordb.as_retriever(search_type="mmr",
+                                                                                     search_kwargs={'k': k,
+                                                                                                    'lambda_mult': lambda_mult}),
+                                                     return_source_documents=True,
+                                                     memory=mem)
     return qa_chain, mem
 
 
@@ -175,7 +166,8 @@ def llm_chatbot_page():
     :return:
     """
     st.title("LLM ChatBot")
-    st.metric("GPU Free Mem", f"{get_gpu_mem_info()} GB")
+    if platform.system() == "windows":
+        st.metric("GPU Free Mem", f"{get_gpu_mem_info()} GB")
     model_name = st.radio("", options=MODEL_PATH.keys(), horizontal=True)
     col1, col2, col3, _ = st.columns(4)
     with col1:
@@ -221,21 +213,23 @@ def llm_chatbot_page():
         with st.chat_message('assistant'):
             st.markdown(f"你好，我是{model_name}, 请问您需要什么帮助呢？")
         for msg in history:
-            with st.chat_message(msg['role']):
-                st.markdown(msg['content'])
-                if 'ref' in msg and show_ref:
-                    st.write(msg['ref'])
+            user_msg, assistant_msg, ref = msg
+            with st.chat_message('user'):
+                st.markdown(user_msg)
+            with st.chat_message('assistant'):
+                st.markdown(assistant_msg)
+                if ref and show_ref:
+                    st.write(ref)
         if prompt_text:
             with st.chat_message('user'):
                 st.markdown(prompt_text)
-                history.append({'role': 'user', 'content': prompt_text})
             with st.chat_message('assistant'):
                 placeholder = st.empty()
                 with placeholder:
                     with st.spinner("正在生成输出..."):
-                        res = qa_chain({'query': prompt_text})
-                        response = res['result']
-                        history.append({'role': 'assistant', 'content': response, 'ref': res['source_documents']})
+                        res = qa_chain({'question': prompt_text, 'chat_history': [r[:2] for r in history]})
+                        response = res['answer']
+                        history.append((prompt_text, response, res['source_documents']))
                 placeholder.empty()
                 st.markdown(response)
                 if show_ref:

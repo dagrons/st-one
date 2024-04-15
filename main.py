@@ -4,7 +4,6 @@ import streamlit as st
 from streamlit_option_menu import option_menu
 
 import settings
-from func.log_tool import log_tool_page
 from func.llm_chatbot.llm_chatbot import llm_chatbot_page
 from func.regex_test import regex_test_page
 from func.gather_info import gather_info_page
@@ -17,7 +16,22 @@ if __name__ == "__main__":
         initial_sidebar_state="expanded",
     )
 
+    st.markdown(r"""
+    <style>
+       .stDeployButton{
+               visibility: hidden
+       }
+       #MainMenu {
+               visibility: hidden
+       }
+    </style>
+
+    """, unsafe_allow_html=True)
+
     pages = {
+        "组件工厂": {
+            "func": demo_page,
+        },
         "LLM ChatBot": {
             "func": llm_chatbot_page
         },
@@ -29,12 +43,6 @@ if __name__ == "__main__":
         },
         "正则测试器": {
             "func": regex_test_page
-        },
-        "日志分析小工具": {
-            "func": log_tool_page
-        },
-        "组件工厂": {
-            "func": demo_page,
         },
     }
 
@@ -54,7 +62,7 @@ if __name__ == "__main__":
         st.markdown("### 当前配置")
         st.write(settings.MODEL_PATH)
         st.markdown("""
-        Repo: https://github.com/dagrons/codebase.git
+        Repo: https://github.com/dagrons/one.git
         Keyword: 算法演示，个人助手，数据分析，可视化""")
 
     if selected_page in pages:

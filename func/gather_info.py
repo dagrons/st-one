@@ -44,4 +44,8 @@ def gather_info_page():
                 df.to_csv(TABLE_PATH, index=False)
             st.toast("成功填报一条记录", icon='😍')
             st.balloons()
+    df = pd.read_csv(TABLE_PATH)
+    st.write(df)
+
+
 

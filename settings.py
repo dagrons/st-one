@@ -1,19 +1,23 @@
 from pathlib import Path
 
-PERSISTENT_DIRECTORY = Path('D:') / 'vectordb'
-EMBEDDING_PATH = Path("D:") / 'paraphrase-MiniLM-L6-v2'
-KG_DATA_PATH = Path('D:') / 'kg_data'
-KG_PROCESSED_DATA_PATH = Path("D:") / 'kg_processed_data'
+DATA_BASE_PATH = Path.home().resolve() / 'data' / 'one'
+if not DATA_BASE_PATH.exists():
+    DATA_BASE_PATH.mkdir(parents=True)
+MODEL_BASE_PATH = Path.home().resolve()
+
+PERSISTENT_DIRECTORY = DATA_BASE_PATH / 'vectordb'
+EMBEDDING_PATH = MODEL_BASE_PATH / 'm3e-base'
+KG_DATA_PATH = DATA_BASE_PATH / 'kg_data'
+KG_PROCESSED_DATA_PATH = DATA_BASE_PATH / 'kg_processed_data'
 MODEL_PATH = {
-    'chatglm3-6b': Path("D:").resolve() / 'chatglm3-6b',
-    'minicpm-2b-dpo-fp16': Path("D:").resolve() / 'MiniCPM-2B-dpo-fp16',
-    'Qwen1.5-1.8b-chat': Path("D:").resolve() / 'Qwen1.5-1.8B-Chat',
-    'Qwen1.5-7b-chat': Path("D:").resolve() / 'Qwen1.5-7B-Chat',
-    'Qwen1.5-14b-chat': Path('D:').resolve() / 'Qwen1.5-14B-Chat',
+    'Qwen1.5-0.5b-chat': MODEL_BASE_PATH.resolve() / 'Qwen1.5-0.5B-Chat',
+    'Qwen1.5-1.8b-chat': MODEL_BASE_PATH.resolve() / 'Qwen1.5-1.8B-Chat',
+    'Qwen1.5-7b-chat': MODEL_BASE_PATH.resolve() / 'Qwen1.5-7B-Chat',
+    'Qwen1.5-14b-chat': MODEL_BASE_PATH.resolve() / 'Qwen1.5-14B-Chat',
+    'minicpm-2b-dpo-fp16': MODEL_BASE_PATH.resolve() / 'MiniCPM-2B-dpo-fp16',
+    'chatglm3-6b': MODEL_BASE_PATH.resolve() / 'chatglm3-6b',
 }
-LOG_PATH = Path("D:") / 'demo_log.csv'
-TABLE_PATH = Path("D:") / 'demo_table.csv'
-TODOCSV_PATH = Path("D:") / 'demo_todolist.csv'
-
-
+LOG_PATH = DATA_BASE_PATH / 'demo_log.csv'
+TABLE_PATH = DATA_BASE_PATH / 'demo_table.csv'
+TODOCSV_PATH = DATA_BASE_PATH / 'demo_todolist.csv'
 

@@ -6,6 +6,8 @@
 
 # 离线部署清单
 
+先在本地成功跑通，然后导出依赖下载pkg，打包传到内网部署
+
 - pkgs
 - dagrons.tar.gz(py310初始环境)
 - one.tar.gz(源码)
@@ -18,7 +20,6 @@
 ## 隐藏Deploy Button和MainMenu
 
 ```python
-
 st.markdown(r"""
 <style>
    .stDeployButton{
@@ -29,7 +30,13 @@ st.markdown(r"""
    }
 </style>
 
-""", unsafe_allow_html=True
-
-)
+""", unsafe_allow_html=True)
 ```
+
+## LLM APP
+
+就是用Prompt作为功能实现，每个Prompt对应了一个函数
+
+在传统App中，我们用代码实现功能，在LLM APP中，我们用Prompt描述输入输出即可
+
+
