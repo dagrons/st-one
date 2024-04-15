@@ -32,9 +32,6 @@ if __name__ == "__main__":
         "组件工厂": {
             "func": demo_page,
         },
-        "LLM ChatBot": {
-            "func": llm_chatbot_page
-        },
         "待办列表": {
             "func": todolist_page
         },
@@ -43,6 +40,9 @@ if __name__ == "__main__":
         },
         "正则测试器": {
             "func": regex_test_page
+        },
+        "LLM ChatBot": {
+            "func": llm_chatbot_page
         },
     }
 

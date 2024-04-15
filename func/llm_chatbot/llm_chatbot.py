@@ -38,6 +38,7 @@ def get_model_tokenizer(model_name):
     elif model_name in ['Qwen1.5-0.5b-chat', 'Qwen1.5-7b-chat', 'Qwen1.5-1.8b-chat', 'Qwen1.5-14b-chat']:
         model = AutoModelForCausalLM.from_pretrained(MODEL_PATH[model_name], trust_remote_code=True,
                                                      device_map="mps").eval()
+
         def chat(tok, ques, history=[], **kw):
             iids = tok.apply_chat_template(
                 history + [{'role': 'user', 'content': ques}],

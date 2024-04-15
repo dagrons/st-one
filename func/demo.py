@@ -1,8 +1,14 @@
 import streamlit as st
+from streamlit_ace import st_ace
 
 
 def demo_page():
 
+    st.markdown("""
+    # Streamlit 
+    
+    st适合数据单向依赖的组件，不适合双向依赖的组件，因为双向依赖就会用到很多rerun
+    """)
     col1, col2 = st.columns(2)
     with col1:
         st.markdown("### 常用组件")
@@ -46,11 +52,8 @@ def demo_page():
         地图可视化
         """)
 
-
-
-
-
-
-
-
+    st.markdown("""
+    ### streamlit-ace 
+    """)
+    st_ace(language="python", keybinding="emacs")
 
