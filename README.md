@@ -4,24 +4,25 @@
 - m3e-base
 - 如何实现高并发
 
-# 离线部署
+# 离线部署清单
 
 先在本地成功跑通，然后导出依赖下载pkg，打包传到内网部署
 
-- pkgs
+- one.tar.gz
+- nltk\_data.tar.gz
+- m3e-base.tar.gz
+- llm-models
 - dagrons.tar.gz(py310初始环境)
-- one.tar.gz(源码)
-- terseract, poppler(for pdf extraction)
-- Qwen1.5(1.8B,7B,14B), ChatGLM3(6B), MiniCPM(2B)
-- nltk\_data
-- paraphrase-MiniLM-L6-v2
+- pkgs.tar.gz
 
-# 在线部署
+# 在线部署清单
 
-- git clone one
-- pip install -r requirements.txt
-- aDrive上传llm model(Qwen1.5-0.5b-chat), embedding(m3e-base), nltk_data
+导入到aDrive，再通过aDrive下载到在线环境，更新最频繁的代码可以通过github更新
 
+- one.tar.gz
+- nltk.tar.gz
+- m3e-base.tar.gz
+- llm models
 
 
 # 隐藏Deploy Button和MainMenu
