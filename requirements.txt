@@ -20,6 +20,8 @@ transformers==4.37.2
 unstructured==0.12.5
 streamlit-ace
 streamlit-option-menu
+faker
+
 
 
 
