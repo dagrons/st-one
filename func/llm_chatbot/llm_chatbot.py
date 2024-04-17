@@ -14,6 +14,7 @@ from langchain_community.document_loaders.pdf import UnstructuredPDFLoader
 from langchain_community.document_loaders.unstructured import UnstructuredFileLoader
 from langchain_community.document_loaders.word_document import UnstructuredWordDocumentLoader
 from langchain_community.embeddings.huggingface import HuggingFaceEmbeddings
+from langchain_community.llms.ollama import Ollama
 from langchain_community.vectorstores.chroma import Chroma
 from langchain_core.callbacks import CallbackManagerForLLMRun
 from langchain_core.language_models import LLM
@@ -37,7 +38,7 @@ def get_model_tokenizer(model_name):
         model = AutoModel.from_pretrained(MODEL_PATH[model_name], trust_remote_code=True, device_map="auto").eval()
     elif model_name in ['Qwen1.5-0.5b-chat', 'Qwen1.5-7b-chat', 'Qwen1.5-1.8b-chat', 'Qwen1.5-14b-chat']:
         model = AutoModelForCausalLM.from_pretrained(MODEL_PATH[model_name], trust_remote_code=True,
-                                                     device_map="auto").eval()
+                                                     device_map="mps").eval()
 
         def chat(tok, ques, history=[], **kw):
             iids = tok.apply_chat_template(
@@ -59,7 +60,7 @@ def get_model_tokenizer(model_name):
         model.chat = chat
     else:
         model = AutoModelForCausalLM.from_pretrained(MODEL_PATH[model_name], trust_remote_code=True,
-                                                     device_map="auto").eval()
+                                                     device_map="mps").eval()
     return model, tokenizer
 
 
@@ -85,6 +86,8 @@ class MyLLM(LLM):
 
 
 def get_llm(model_name):
+    if model_name == 'wizardlm2':
+        return Ollama(model='wizardlm2')
     llm = MyLLM(model_name)
     return llm
 
@@ -169,7 +172,7 @@ def llm_chatbot_page():
     st.title("LLM ChatBot")
     if platform.system() == "windows":
         st.metric("GPU Free Mem", f"{get_gpu_mem_info()} GB")
-    model_name = st.radio("", options=MODEL_PATH.keys(), horizontal=True)
+    model_name = st.radio("", options=['wizardlm2'] + list(MODEL_PATH.keys()), horizontal=True)
     col1, col2, col3, _ = st.columns(4)
     with col1:
         clear = st.button("清除会话", type="primary")
