@@ -1,59 +1,131 @@
+import numpy as np
+import pandas as pd
+import psutil
+import pydeck as pdk
 import streamlit as st
 from streamlit_ace import st_ace
 
 
-def demo_page():
+@st.experimental_fragment(run_every=2)
+def update_cpu_percentage(placeholder):
+    with placeholder.container():
+        col1, col2 = st.columns(2)
+        with col1:
+            st.metric("CPU Percentage", f"{psutil.cpu_percent()}")
+        with col2:
+            st.metric("Mem Percentage", f"{psutil.virtual_memory()[2]}")
 
+
+@st.experimental_fragment(run_every=2)
+def update_point_chart(placeholder):
+    if st.session_state.chart_type == 'a':
+        chart_data = pd.DataFrame(np.random.randn(200, 3), columns=["a", "b", "c"])
+        st.vega_lite_chart(
+            chart_data,
+            {
+                "mark": {"type": "circle", "tooltip": True},
+                "encoding": {
+                    "x": {"field": "a", "type": "quantitative"},
+                    "y": {"field": "b", "type": "quantitative"},
+                    "size": {"field": "c", "type": "quantitative"},
+                    "color": {"field": "c", "type": "quantitative"},
+                },
+            },
+        )
+    else:
+        chart_data = pd.DataFrame(np.random.randn(10, 2), columns=["a", "b"])
+        st.vega_lite_chart(
+            chart_data,
+            {
+                "mark": "line",
+                "encoding": {
+                    "x": {"field": "a", "type": "quantitative"},
+                    "y": {"field": "b", "type": "quantitative"}
+                }
+            }
+        )
+
+
+def demo_page():
+    if 'chart_type' not in st.session_state:
+        st.session_state.chart_type = 'a'
     st.markdown("""
     # Streamlit 
     
     st适合数据单向依赖的组件，不适合双向依赖的组件，因为双向依赖就会用到很多rerun
     """)
-    col1, col2 = st.columns(2)
-    with col1:
-        st.markdown("### 常用组件")
-        st.color_picker("颜色选择器")
-        st.progress(50, '进度')
-        st.metric("Wind", "9 mph", "-8%")
-        st.toast("你有一条消息待查收", icon='😍')
-
-        with st.popover('popover'):
-            st.text_input("popover")
+    st.markdown("""
+    # 动态仪表盘
+    """)
+    placeholder = st.empty()
+    update_cpu_percentage(placeholder)
+    st.markdown("""
+    # vega-lite                
+    """)
+    col1, col2 = st.columns([3, 1])
     with col2:
-        st.markdown("""
-        ### Graphviz        
-        用于演示图相关的算法
-        """)
-        st.graphviz_chart('''
-                    digraph G {
-                        1 -> intr[color="red"]
-                        intr -> runbl
-                        runbl -> 1
-                        1 -> kernel
-                        kernel -> zombie
-                        kernel -> sleep
-                        kernel -> runmem
-                        sleep -> swap
-                        swap -> runswap
-                        runswap -> new
-                        runswap -> runmem
-                        new -> runmem
-                        sleep -> runmem
-                    }''')
+        chart_type = st.selectbox("图表类型", options=['a', 'b'])
+        st.session_state.chart_type = chart_type
     with col1:
-        st.markdown("""
-        ### vega-lite        
-        图表可视化        
-        """)
+        placeholder = st.empty()
+        update_point_chart(placeholder)
+    st.markdown("""
+    # pydeck
+    """)
+    chart_data = pd.DataFrame(
+        np.random.randn(1000, 2) / [50, 50] + [37.76, -122.4],
+        columns=['lat', 'lon'])
 
-    with col2:
-        st.markdown("""
-        ### pydeck
-        地图可视化
-        """)
+    st.pydeck_chart(pdk.Deck(
+        map_style=None,
+        initial_view_state=pdk.ViewState(
+            latitude=37.76,
+            longitude=-122.4,
+            zoom=11,
+            pitch=50,
+        ),
+        layers=[
+            pdk.Layer(
+                'HexagonLayer',
+                data=chart_data,
+                get_position='[lon, lat]',
+                radius=200,
+                elevation_scale=4,
+                elevation_range=[0, 1000],
+                pickable=True,
+                extruded=True,
+            ),
+            pdk.Layer(
+                'ScatterplotLayer',
+                data=chart_data,
+                get_position='[lon, lat]',
+                get_color='[200, 30, 0, 160]',
+                get_radius=200,
+            ),
+        ],
+    ))
+    st.markdown("""
+    # Graphviz        
+    用于演示图相关的算法
+    """)
+    st.graphviz_chart('''
+                digraph G {
+                    1 -> intr[color="red"]
+                    intr -> runbl
+                    runbl -> 1
+                    1 -> kernel
+                    kernel -> zombie
+                    kernel -> sleep
+                    kernel -> runmem
+                    sleep -> swap
+                    swap -> runswap
+                    runswap -> new
+                    runswap -> runmem
+                    new -> runmem
+                    sleep -> runmem
+                }''')
 
     st.markdown("""
-    ### streamlit-ace 
+    # streamlit-ace 
     """)
     st_ace(language="python", keybinding="emacs")
-
