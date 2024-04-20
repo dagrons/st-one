@@ -86,8 +86,8 @@ class MyLLM(LLM):
 
 
 def get_llm(model_name):
-    if model_name == 'wizardlm2':
-        return Ollama(model='wizardlm2')
+    if model_name in ['wizardlm2', 'llama3']:
+        return Ollama(model=model_name)
     llm = MyLLM(model_name)
     return llm
 
@@ -170,16 +170,20 @@ def llm_chatbot_page():
     :return:
     """
     st.title("LLM ChatBot")
+
     if platform.system() == "windows":
         st.metric("GPU Free Mem", f"{get_gpu_mem_info()} GB")
-    model_name = st.radio("", options=['wizardlm2'] + list(MODEL_PATH.keys()), horizontal=True)
-    col1, col2, col3, _ = st.columns(4)
+    col1, col2, col3, col4 = st.columns([1, 1, 2, 1])
     with col1:
         clear = st.button("清除会话", type="primary")
     with col2:
         reload_kg = st.button("重载知识库", type="primary")
     with col3:
+        model_name = st.selectbox("", options=['llama3', 'wizardlm2'] + list(MODEL_PATH.keys()),
+                                  label_visibility="collapsed")
+    with col4:
         show_ref = st.checkbox("展示引用")
+
     placeholder = st.empty()
     prompt_text = st.chat_input('Chat with LLM', key="chat_input")
 
