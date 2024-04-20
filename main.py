@@ -67,7 +67,8 @@ if __name__ == "__main__":
         st.write(settings.MODEL_PATH)
         st.markdown("""
         Repo: https://github.com/dagrons/one.git
-        Keyword: 算法演示，个人助手，数据分析，可视化""")
+        Keyword: 算法演示，个人助手，数据分析，可视化        
+        """)
 
     if selected_page in pages:
         pages[selected_page]['func']()

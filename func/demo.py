@@ -58,14 +58,17 @@ def demo_page():
     tab1, tab2, tab3, tab4, tab5 = st.tabs(['常用组件', '仪表盘', '图表', 'Graphviz', '代码编辑器'])
 
     with tab1:
-        st.markdown("""
-        # 常用组件
-        """)
+        st.markdown("## 输入")
         st.markdown("### multiselect")
         st.multiselect(
             'What are your favorite colors',
             ['Green', 'Yellow', 'Red', 'Blue'],
             ['Yellow', 'Red'])
+        st.markdown("### select_slider")
+        st.select_slider("", options=['red', 'orange', 'yellow', 'green', 'blue', 'indigo', 'violet'])
+        st.markdown("""
+        ## 容器
+        """)
         st.markdown("""
         ### empty
         empty是一个容器，只能用来存放一个组件，每次调用都会更换组件
@@ -78,13 +81,10 @@ def demo_page():
         ```
         值得注意的是，每次调用`with placeholder.container()`，都会容器中之前的组件清空，**而`st.container`则不会清空之前的组件，注意两者区别**        
         """)
-
         st.markdown("### expander")
         with st.expander("demo expander"):
             st.markdown("...")
             st.image("img/one.png")
-        st.camera_input("")
-
     with tab2:
         st.markdown("""
         # 仪表盘
