@@ -16,6 +16,7 @@ from langchain_community.document_loaders.word_document import UnstructuredWordD
 from langchain_community.embeddings.huggingface import HuggingFaceEmbeddings
 from langchain_community.llms.ollama import Ollama
 from langchain_community.vectorstores.chroma import Chroma
+from langchain_core.callbacks import BaseCallbackHandler
 from langchain_core.callbacks import CallbackManagerForLLMRun
 from langchain_core.language_models import LLM
 from langchain_text_splitters import RecursiveCharacterTextSplitter
@@ -31,11 +32,25 @@ if not KG_PROCESSED_DATA_PATH.exists():
     KG_PROCESSED_DATA_PATH.mkdir()
 
 
+class MyCustomCallbackHandler(BaseCallbackHandler):
+    """
+    无法使用在本地LLM是因为没有触发过on_llm_new_token事件
+    """
+
+    def on_llm_new_token(
+            self,
+            token: str,
+            **kwargs: Any,
+    ) -> None:
+        print(f"model generated: {token}")
+
+
 @st.cache_resource
 def get_model_tokenizer(model_name):
     tokenizer = AutoTokenizer.from_pretrained(MODEL_PATH[model_name], trust_remote_code=True)
     if model_name in ['chatglm3-6b']:
-        model = AutoModel.from_pretrained(MODEL_PATH[model_name], trust_remote_code=True, device_map="auto").eval()
+        model = AutoModel.from_pretrained(MODEL_PATH[model_name], trust_remote_code=True, load_in_4bit=True,
+                                          device_map="auto").eval()
     elif model_name in ['Qwen1.5-0.5b-chat', 'Qwen1.5-7b-chat', 'Qwen1.5-1.8b-chat', 'Qwen1.5-14b-chat']:
         model = AutoModelForCausalLM.from_pretrained(MODEL_PATH[model_name], trust_remote_code=True,
                                                      device_map="auto").eval()
@@ -86,8 +101,8 @@ class MyLLM(LLM):
 
 
 def get_llm(model_name):
-    if model_name in ['wizardlm2', 'llama3']:
-        return Ollama(model=model_name)
+    if model_name in ['wizardlm2', 'llama3', 'qwen:0.5b']:
+        return Ollama(model=model_name, callbacks=[MyCustomCallbackHandler()])
     llm = MyLLM(model_name)
     return llm
 
@@ -179,7 +194,7 @@ def llm_chatbot_page():
     with col2:
         reload_kg = st.button("重载知识库", type="primary")
     with col3:
-        model_name = st.selectbox("", options=['llama3', 'wizardlm2'] + list(MODEL_PATH.keys()),
+        model_name = st.selectbox("", options=['qwen:0.5b', 'llama3', 'wizardlm2'] + list(MODEL_PATH.keys()),
                                   label_visibility="collapsed")
     with col4:
         show_ref = st.checkbox("展示引用")
