@@ -85,6 +85,14 @@ def demo_page():
         with st.expander("demo expander"):
             st.markdown("...")
             st.image("img/one.png")
+        st.markdown("""
+        ### popover        
+        """)
+        with st.popover("popover"):
+            password = st.text_input("请输入密码")
+            if password == "dagrons":
+                st.balloons()
+            st.markdown("...")
     with tab2:
         st.markdown("""
         # 仪表盘
