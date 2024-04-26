@@ -3,8 +3,8 @@ import os
 import streamlit as st
 from streamlit_option_menu import option_menu
 
-import settings
-from func.llm_chatbot.llm_chatbot import llm_chatbot_page
+from func.llm_chatbot.page.llm_chatbot import llm_chatbot_page
+from func.llm_chatbot.page.retrieval_page import retrieval_page
 
 if __name__ == "__main__":
     st.set_page_config(
@@ -25,8 +25,11 @@ if __name__ == "__main__":
     """, unsafe_allow_html=True)
 
     pages = {
-        "LLM Chatbot": {
+        "聊天机器人": {
             "func": llm_chatbot_page,
+        },
+        "知识库检索": {
+            "func": retrieval_page,
         }
     }
 
@@ -43,10 +46,7 @@ if __name__ == "__main__":
             None,
             options=options,
             default_index=default_index)
-        st.markdown("### 当前配置")
-        st.write(settings.MODEL_PATH)
         st.markdown("""
-        Repo: https://github.com/dagrons/one.git
         Keyword: 算法演示，个人助手，数据分析，可视化        
         """)
 
