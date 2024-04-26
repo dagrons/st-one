@@ -4,12 +4,7 @@ import streamlit as st
 from streamlit_option_menu import option_menu
 
 import settings
-from func.demo import demo_page
-from func.gather_info import gather_info_page
 from func.llm_chatbot.llm_chatbot import llm_chatbot_page
-from func.pd_toy import pd_toy_page
-from func.regex_test import regex_test_page
-from func.todolist import todolist_page
 
 if __name__ == "__main__":
     st.set_page_config(
@@ -30,21 +25,6 @@ if __name__ == "__main__":
     """, unsafe_allow_html=True)
 
     pages = {
-        "组件工厂": {
-            "func": demo_page,
-        },
-        "待办列表": {
-            "func": todolist_page
-        },
-        "信息填报": {
-            "func": gather_info_page,
-        },
-        "正则测试器": {
-            "func": regex_test_page,
-        },
-        "PD测试器": {
-            "func": pd_toy_page,
-        },
         "LLM Chatbot": {
             "func": llm_chatbot_page,
         }

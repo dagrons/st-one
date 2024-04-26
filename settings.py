@@ -17,7 +17,5 @@ MODEL_PATH = {
     'minicpm-2b-dpo-fp16': MODEL_BASE_PATH.resolve() / 'MiniCPM-2B-dpo-fp16',
     'chatglm3-6b': MODEL_BASE_PATH.resolve() / 'chatglm3-6b',
 }
-LOG_PATH = DATA_BASE_PATH / 'demo_log.csv'
-TABLE_PATH = DATA_BASE_PATH / 'demo_table.csv'
-TODOCSV_PATH = DATA_BASE_PATH / 'demo_todolist.csv'
+
 
