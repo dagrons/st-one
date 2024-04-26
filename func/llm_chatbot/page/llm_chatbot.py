@@ -13,7 +13,7 @@ def llm_chatbot_page():
     with c3:
         selected_embedding = st.selectbox("", options=SUPPORTED_EMBEDDINGS, label_visibility="collapsed")
     with c4:
-        with st.popover(":+1:"):
+        with st.popover(":hammer_and_wrench:"):
             enable_rag = st.checkbox("开启RAG")
             enable_show_ref = enable_rag and st.checkbox("显示召回")
             enable_history = st.checkbox("关联历史会话")

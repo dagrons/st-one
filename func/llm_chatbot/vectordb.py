@@ -30,10 +30,9 @@ def reload_vectordb(model: Union[str, Path]) -> None:
     for suffix in ["md", "txt", "docx", 'pdf']:
         for fpath in KG_DATA_PATH.glob(f"**/*.{suffix}"):
             files.append(str(fpath))
-    docs = []
-    import pdb; pdb.set_trace()
-    if len(docs) == 0:
+    if len(files) == 0:
         return
+    docs = []
     for one_file in tqdm(files):
         file_type = one_file.split('.')[-1]
         if file_type == 'md':

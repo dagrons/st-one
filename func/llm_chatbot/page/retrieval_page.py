@@ -15,7 +15,7 @@ def retrieval_page():
     with col1:
         prompt = st.text_input("输入你想检索的内容", label_visibility="collapsed")
     with col2:
-        with st.popover(":+1:"):
+        with st.popover(":hammer_and_wrench:"):
             model = st.selectbox('选择Embedding', options=SUPPORTED_EMBEDDINGS)
             search_type = st.selectbox("检索方式", options=['similarity', 'similarity_score_threshold', 'mmr'])
             if search_type == 'similarity':
