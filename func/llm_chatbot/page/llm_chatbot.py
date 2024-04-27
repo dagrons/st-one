@@ -5,14 +5,13 @@ from settings import SUPPORTED_MODELS, SUPPORTED_EMBEDDINGS
 
 def llm_chatbot_page():
     st.title("LLM ChatBot")
-    c1, c2, c3, c4 = st.columns([1, 1.5, 1.5, 1])
+    c1, c2, _= st.columns([1, 1, 5])
     with c1:
         clear_history = st.button("清空会话", type="primary")
+    with st.sidebar:
+        selected_model = st.selectbox("语言模型", options=SUPPORTED_MODELS)
+        selected_embedding = st.selectbox("嵌入模型", options=SUPPORTED_EMBEDDINGS)
     with c2:
-        selected_model = st.selectbox("", options=SUPPORTED_MODELS, label_visibility="collapsed")
-    with c3:
-        selected_embedding = st.selectbox("", options=SUPPORTED_EMBEDDINGS, label_visibility="collapsed")
-    with c4:
         with st.popover(":hammer_and_wrench:"):
             enable_rag = st.checkbox("开启RAG")
             enable_show_ref = enable_rag and st.checkbox("显示召回")

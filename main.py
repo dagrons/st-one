@@ -4,7 +4,7 @@ import streamlit as st
 from streamlit_option_menu import option_menu
 
 from func.llm_chatbot.page.llm_chatbot import llm_chatbot_page
-from func.llm_chatbot.page.retrieval_page import retrieval_page
+from func.llm_chatbot.page.retrieval import retrieval_page
 
 if __name__ == "__main__":
     st.set_page_config(
@@ -36,7 +36,7 @@ if __name__ == "__main__":
     with st.sidebar:
         st.image(
             os.path.join(
-                "img", "one.png"
+                "img", "two.png"
             ),
             use_column_width=True
         )
