@@ -3,7 +3,9 @@ import pandas as pd
 import psutil
 import pydeck as pdk
 import streamlit as st
+from st_aggrid import AgGrid
 from streamlit_ace import st_ace
+from streamlit_modal import Modal
 
 
 @st.experimental_fragment()
@@ -55,9 +57,9 @@ def demo_page():
     st适合数据单向依赖的组件，不适合双向依赖的组件，因为双向依赖就会用到很多rerun
     """)
 
-    tab1, tab2, tab3, tab4, tab5 = st.tabs(['常用组件', '仪表盘', '图表', 'Graphviz', '代码编辑器'])
+    common_widget_tab, metrics_tab, chart_tab, graphviz_tab, code_editor_tab, aggrid_tab = st.tabs(['常用组件', '仪表盘', '图表', 'Graphviz', '代码编辑器', 'AgGrid'])
 
-    with tab1:
+    with common_widget_tab:
         st.markdown("## 输入")
         st.markdown("### multiselect")
         st.multiselect(
@@ -93,14 +95,14 @@ def demo_page():
             if password == "dagrons":
                 st.balloons()
             st.markdown("...")
-    with tab2:
+    with metrics_tab:
         st.markdown("""
         # 仪表盘
         可以通过`run_every`参数实现动态刷新
         """)
         placeholder = st.empty()
         update_cpu_percentage(placeholder)
-    with tab3:
+    with chart_tab:
         st.markdown("""
         # 图表                
         """)
@@ -147,7 +149,7 @@ def demo_page():
             ],
         ))
 
-    with tab4:
+    with graphviz_tab:
         st.markdown("""
         # Graphviz        
         用于演示图相关的算法
@@ -169,8 +171,15 @@ def demo_page():
                         sleep -> runmem
                     }''')
 
-    with tab5:
+    with code_editor_tab:
         st.markdown("""
         # 代码编辑器
         """)
         st_ace(language="python", keybinding="emacs")
+    with aggrid_tab:
+        df = pd.read_csv(
+            'https://raw.githubusercontent.com/fivethirtyeight/data/master/airline-safety/airline-safety.csv')
+        AgGrid(df)
+
+
+
