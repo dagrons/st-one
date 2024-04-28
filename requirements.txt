@@ -22,5 +22,5 @@ streamlit-ace
 streamlit-option-menu
 faker
 pynvml
-
+streamlit-aggrid
 

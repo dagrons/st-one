@@ -8,19 +8,15 @@
 
 streamlit + fastapi的方式，对前端只用暴露一个端口
 
-# 需求梳理
+# Core Concepts 
 
-不允许用户上传文件到本地数据库，以防投毒
-
-# 框架设计
-
-数据库成为可选项，那就需要sqlarchemy
-
+chatbot, agent, retriever
 
 # day0-页面开发
 
-聊天页面
-检索页面
+聊天页面 - llm_chatbot
+助手页面 - llm_agent
+检索页面 - retrieval
 
 # day1-接口设计
 
@@ -28,7 +24,6 @@ streamlit + fastapi的方式，对前端只用暴露一个端口
 
 /chat: 有历史记录
 /search
-
 
 
 
