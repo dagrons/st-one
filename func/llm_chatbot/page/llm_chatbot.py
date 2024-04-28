@@ -10,7 +10,7 @@ def llm_chatbot_page():
         clear_history = st.button("清空会话", type="primary")
     with st.sidebar:
         selected_model = st.selectbox("语言模型", options=SUPPORTED_MODELS)
-        selected_embedding = st.selectbox("嵌入模型", options=SUPPORTED_EMBEDDINGS)
+        selected_emb = st.selectbox("嵌入模型", options=SUPPORTED_EMBEDDINGS)
     with c2:
         with st.popover(":hammer_and_wrench:"):
             enable_rag = st.checkbox("开启RAG")

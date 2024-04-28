@@ -15,10 +15,10 @@ from tqdm import tqdm
 from settings import PERSISTENT_DIRECTORY, LOCAL_EMBEDDINGS, KG_DATA_PATH, KG_PROCESSED_DATA_PATH
 
 
-def create_vectordb(model: Union[str, Path]) -> VectorStore:
-    if model in LOCAL_EMBEDDINGS:
-        model = str(LOCAL_EMBEDDINGS[model])
-    embeddings = HuggingFaceEmbeddings(model_name=model)
+def create_vectordb(emb_model: Union[str, Path]) -> VectorStore:
+    if emb_model in LOCAL_EMBEDDINGS:
+        emb_model = str(LOCAL_EMBEDDINGS[emb_model])
+    embeddings = HuggingFaceEmbeddings(model_name=emb_model)
     vectordb = Chroma(persist_directory=str(PERSISTENT_DIRECTORY), embedding_function=embeddings)
     return vectordb
 

@@ -5,14 +5,14 @@ from settings import SUPPORTED_EMBEDDINGS
 
 
 @st.cache_resource
-def vectordb(model):
-    return create_vectordb(model)
+def vectordb(emb_model):
+    return create_vectordb(emb_model)
 
 
 def retrieval_page():
     st.title("Retrieval")
     with st.sidebar:
-        model = st.selectbox('嵌入模型', options=SUPPORTED_EMBEDDINGS)
+        emb_model = st.selectbox('嵌入模型', options=SUPPORTED_EMBEDDINGS)
     col1, col2, col3 = st.columns([4, 1, 1])
     with col1:
         prompt = st.text_input("输入你想检索的内容", label_visibility="collapsed")
@@ -33,10 +33,10 @@ def retrieval_page():
                 search_kwargs = {'k': k, 'lambda_mult': lambda_mult}
     if reload_db:
         with st.spinner("正在重载数据库..."):
-            reload_vectordb(model)
+            reload_vectordb(emb_model)
             vectordb.clear()
     if prompt:
-        retriver = vectordb(model).as_retriever(search_type=search_type, search_kwargs=search_kwargs)
+        retriver = vectordb(emb_model).as_retriever(search_type=search_type, search_kwargs=search_kwargs)
         result = retriver.invoke(prompt)
         st.session_state.last_result = result
     if 'last_result' in st.session_state:
