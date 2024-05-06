@@ -1,7 +1,6 @@
-from abc import ABC, abstractmethod
-from pathlib import Path
 import time
-from typing import List, Union, Tuple, Iterator, Any, Dict
+from abc import ABC, abstractmethod
+from typing import List, Tuple, Iterator, Any, Dict
 
 
 class BaseAPI(ABC):
@@ -12,7 +11,7 @@ class BaseAPI(ABC):
              kg_name: str = "m3e-base",
              chat_history: List[Tuple[str, str]] = [],
              enable_rag: bool = False,
-             ) -> Union[str, Tuple[str, str]]:
+             ) -> str|Tuple[str, str]:
         """
         聊天统一接口
         :param model: llm模型
@@ -29,7 +28,7 @@ class BaseAPI(ABC):
                     kg_name: str = "m3e-base",
                     chat_history: List[Tuple[str, str]] = [],
                     enable_rag: bool = False,
-                    ) -> Union[Iterator[str|List[str]]]:
+                    ) -> Iterator[str|List[str]]:
         """
         流式输出接口
         :param model:
@@ -41,12 +40,61 @@ class BaseAPI(ABC):
         ...
 
     @abstractmethod
+    def agent_chat(self,
+                   agent: str,
+                   query: str,
+                   chat_history: List[Tuple[str, str]]
+                   ) -> List[str]:
+        """
+
+        :param agent:
+        :param query:
+        :param chat_history:
+        :return:
+        """
+        ...
+
+    @abstractmethod
+    def stream_agent_chat(self,
+                          agent: str,
+                          chat_history: List[Tuple[str, str]]) -> Iterator[str | List[str]]:
+        """
+
+        :param agent:
+        :param chat_history:
+        :return:
+        """
+
+    @abstractmethod
     def list_llm(self) -> List[str]:
         """
 
         :return:
         """
         ...
+
+    @abstractmethod
+    def list_emb(self) -> List[str]:
+        """
+
+        :return:
+        """
+
+    @abstractmethod
+    def get_emb_vector(self, query: str, emb_model) -> List[float]:
+        """
+
+        :param emb_model:
+        :param query:
+        :return:
+        """
+
+    @abstractmethod
+    def list_agent(self) -> List[str]:
+        """
+
+        :return:
+        """
 
     @abstractmethod
     def list_kg_db(self) -> List[str]:
@@ -75,19 +123,33 @@ class BaseAPI(ABC):
 
 class DummyAPI(BaseAPI):
 
+    def agent_chat(self, agent: str, query: str, chat_history: List[Tuple[str, str]]) -> List[str]:
+        pass
+
+    def stream_agent_chat(self, agent: str, chat_history: List[Tuple[str, str]]) -> Iterator[str | List[str]]:
+        pass
+
+    def list_emb(self) -> List[str]:
+        return ['m3e-base', 'paraphrase-MiniLM-L6-v2']
+
+    def get_emb_vector(self, query: str, emb_model:str) -> List[float]:
+        return [0.1*100]
+
+    def list_agent(self) -> List[str]:
+        pass
+
     def list_llm(self) -> List[str]:
         return ['dummy_model']
 
     def chat(self, model: str = "qwen:0.5b", kg_name: str = "m3e-base", chat_history: List[Tuple[str, str]] = [],
-             enable_rag: bool = False) -> str|Tuple[str, str]:
+             enable_rag: bool = False) -> str | Tuple[str, str]:
         if enable_rag:
             return [('你也好'), ('source, 你好')]
         else:
             return '你也好'
 
     def stream_chat(self, model: str = "qwen:0.5b", kg_name: str = None,
-                    chat_history: List[Tuple[str, str]] = [], enable_rag: bool = False) -> Union[
-        Iterator[str|List[str]]]:
+                    chat_history: List[Tuple[str, str]] = [], enable_rag: bool = False) -> Iterator[str|List[str]]:
         if enable_rag:
             yield ['dummy_source_documents']
             for i in range(10):
