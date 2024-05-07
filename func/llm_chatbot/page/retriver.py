@@ -5,7 +5,7 @@ from func.llm_chatbot.page.api import api
 
 
 def retrieval_page():
-    st.title("Retrieval")
+    st.title("知识库检索")
     with st.sidebar:
         with spinner("正在获取数据库列表"):
             kg_db_list = api.list_kg_db()

@@ -2,8 +2,9 @@
 
 ## 需求分析
 
-知识库外挂，SUPPORTED_EMB_MODEL + SUPPORTED_VECTORDB
-client_agent，在浏览器中聊天时，streamlit能获用户ip吗？如果可以，就能在服务端下发指令让client_agent执行
+注册模型，注销模型(每个模型对应一个dir)
+注册知识库，注销知识库(每个知识库对一个一个dir)
+
 
 ## 技术选型
 
@@ -19,10 +20,10 @@ streamlit + fastapi的方式，对前端只用暴露一个端口
 
 聊天页面 - llm_chatbot
 
-助手页面 - llm_agent
-> llm agent只能是特殊领域的agent，比如sql查询，表格查询，计算等，而且对小模型效果并不是很好
-> 
 检索页面 - retrieval
+
+后台管理 - admin
+> 模型管理，知识库管理
 
 # day1 - 接口设计
 
@@ -36,9 +37,13 @@ streamlit + fastapi的方式，对前端只用暴露一个端口
 /list_kg_db
 /search_kg_db
 
-# day2 - 后端接口层
+# day2 - api + model
 
-只有把后端接口定下来，才知道后端有哪些分层
+有头有尾，才知道中间怎么搞
+
+
+
+
 
 
 

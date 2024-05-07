@@ -3,7 +3,7 @@ import os
 import streamlit as st
 from streamlit_option_menu import option_menu
 
-from func.llm_chatbot.page.llm_agent import llm_agent_page
+from func.llm_chatbot.page.admin import admin_page
 from func.llm_chatbot.page.llm_chatbot import llm_chatbot_page
 from func.llm_chatbot.page.retriver import retrieval_page
 
@@ -26,16 +26,17 @@ if __name__ == "__main__":
     """, unsafe_allow_html=True)
 
     pages = {
-        "问答机器人": {
+        "QA问答": {
             "func": llm_chatbot_page,
-        },
-        "智能助手": {
-            "func": llm_agent_page,
         },
         "知识库检索": {
             "func": retrieval_page,
-        }
+        },
     }
+    if st.query_params.get('mode') == 'admin':
+        pages['后台管理'] = {
+            'func': admin_page,
+        }
 
     with st.sidebar:
         st.image(

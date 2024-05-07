@@ -6,7 +6,7 @@ from func.llm_chatbot.page.api import api
 
 
 def llm_chatbot_page():
-    st.title("LLM ChatBot")
+    st.title("QA问答")
     c1, c2, _ = st.columns([1, 1, 5])
     with c1:
         clear_history = st.button("清空会话", type="primary")
@@ -49,7 +49,7 @@ def llm_chatbot_page():
                     placeholder.markdown(resp)
                 if enable_show_ref:
                     st.markdown(source_documents)
-                chat_history.append((prompt_input, (resp, source_documents) if enable_show_ref else resp))
+                chat_history.append((prompt_input, (resp, source_documents) if enable_rag else resp))
 
 
 
