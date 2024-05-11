@@ -1,9 +1,34 @@
+import io
+import json
 import time
 from abc import ABC, abstractmethod
 from typing import List, Tuple, Iterator, Any, Dict
 
+import requests
+
+from func.llm_chatbot.server import schema
+
 
 class BaseAPI(ABC):
+
+    @abstractmethod
+    def read_kg_dbs(self) -> List[schema.KGDB]:
+        """
+
+        :return:
+        """
+        ...
+
+    @abstractmethod
+    def create_kg_db(self, uploaded_file: io.BytesIO, uploaded_filename: str, upload_kg_type: str):
+        """
+
+        :param upload_kg_type:
+        :param uploaded_filename:
+        :param uploaded_file:
+        :return:
+        """
+        ...
 
     @abstractmethod
     def chat(self,
@@ -97,14 +122,6 @@ class BaseAPI(ABC):
         """
 
     @abstractmethod
-    def list_kg_db(self) -> List[str]:
-        """
-
-        :return:
-        """
-        ...
-
-    @abstractmethod
     def search_kg_db(self,
                      kg_name: str,
                      query: str,
@@ -122,6 +139,9 @@ class BaseAPI(ABC):
 
 
 class DummyAPI(BaseAPI):
+
+    def create_kg_db(self, uploaded_file: io.BytesIO, uploaded_filename: str, upload_kg_type):
+        pass
 
     def agent_chat(self, agent: str, query: str, chat_history: List[Tuple[str, str]]) -> List[str]:
         pass
@@ -159,8 +179,8 @@ class DummyAPI(BaseAPI):
             time.sleep(0.5)
             yield 'dummy token'
 
-    def list_kg_db(self) -> List[str]:
-        return ['dummy_kg']
+    def read_kg_dbs(self) -> Dict[str, bool]:
+        return {'dummy_kg1': True, 'dummy_kg2': True, 'dummy_kg3': False}
 
     def search_kg_db(self, kg_name: str, query: str, search_type: str, search_kwargs: Dict[str, Any]) -> List[str]:
         return [
@@ -169,6 +189,22 @@ class DummyAPI(BaseAPI):
 
 
 class RequestAPI(BaseAPI):
+    endpoint = "http://localhost:8000"
+
+    def create_kg_db(self, uploaded_file: io.BytesIO, uploaded_filename: str, upload_kg_type: str):
+        url = self.endpoint + '/kg_db/'
+        data = {
+            'item': json.dumps({
+                'kg_name': uploaded_filename,
+                'kg_type': upload_kg_type,
+                'valid': False,
+            })
+        }
+        files = {
+            'kg_db_tarfile': (uploaded_filename, uploaded_file)
+        }
+        res = requests.post(url, data=data, files=files)
+        return res
 
     def chat(self, model: str = "qwen:0.5b", kg_name: str = "m3e-base", chat_history: List[Tuple[str, str]] = [],
              enable_rag: bool = False) -> str | Tuple[str, str]:
@@ -196,11 +232,14 @@ class RequestAPI(BaseAPI):
     def list_agent(self) -> List[str]:
         pass
 
-    def list_kg_db(self) -> List[str]:
-        pass
+    def read_kg_dbs(self) -> List[schema.KGDB]:
+        url = self.endpoint + '/kg_dbs/'
+        res = requests.get(url)
+        return [schema.KGDB.model_validate(item) for item in res.json()]
 
     def search_kg_db(self, kg_name: str, query: str, search_type: str, search_kwargs: Dict[str, Any]) -> List[str]:
         pass
 
 
-api = DummyAPI()
+dummy_api = DummyAPI()
+request_api = RequestAPI()

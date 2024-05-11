@@ -2,7 +2,7 @@ from typing import Tuple, List
 
 import streamlit as st
 
-from func.llm_chatbot.page.api import api
+from func.llm_chatbot.page.api import dummy_api
 
 
 def llm_chatbot_page():
@@ -11,8 +11,8 @@ def llm_chatbot_page():
     with c1:
         clear_history = st.button("清空会话", type="primary")
     with st.sidebar:
-        kg_db_list = api.list_kg_db()
-        llm_list = api.list_llm()
+        kg_db_list = dummy_api.read_kg_dbs()
+        llm_list = dummy_api.list_llm()
         selected_model = st.selectbox("语言模型", options=llm_list)
         selected_db = st.selectbox("数据库", options=kg_db_list)
     with c2:
@@ -41,7 +41,7 @@ def llm_chatbot_page():
             with msg:
                 placeholder = st.empty()
                 resp = ''
-                stream = api.stream_chat(selected_model, selected_db, chat_history=[], enable_rag=enable_rag)
+                stream = dummy_api.stream_chat(selected_model, selected_db, chat_history=[], enable_rag=enable_rag)
                 if enable_rag:
                     source_documents = next(stream)
                 for token in stream:
@@ -50,7 +50,4 @@ def llm_chatbot_page():
                 if enable_show_ref:
                     st.markdown(source_documents)
                 chat_history.append((prompt_input, (resp, source_documents) if enable_rag else resp))
-
-
-
 

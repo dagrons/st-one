@@ -23,4 +23,8 @@ streamlit-option-menu
 faker
 pynvml
 streamlit-aggrid
+fastapi
+uvicorn
+fastapi-offline
+
 

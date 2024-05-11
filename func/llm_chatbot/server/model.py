@@ -1,9 +1,8 @@
 import enum
 
 from sqlalchemy import Column, String, Boolean, Enum
-from sqlalchemy.orm import declarative_base
 
-Base = declarative_base()
+from func.llm_chatbot.server.database import Base
 
 
 class LLMType(enum.Enum):
@@ -29,5 +28,6 @@ class KGDB(Base):
     kg_type = Column('kg_type', String(100), nullable=False)
     data = Column('data', String(200), nullable=False)
     valid = Column('valid', Boolean(), default=True)
+
 
 
