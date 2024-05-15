@@ -1,6 +1,6 @@
 import tarfile
 import tempfile
-from typing import List, Type
+from typing import List, Type, Iterable, Dict, Any
 
 from sqlalchemy.orm import Session
 
@@ -50,14 +50,9 @@ def read_kg_dbs(db: Session) -> list[Type[KGDB]]:
         raise SQLException("读取kg_dbs失败") from e
 
 
-def update_kg_dbs(db: Session, kg_dbs: List[schema.KGDBUpdate]):
+def update_kg_dbs(db: Session, mappings: Iterable[Dict[str, Any]]):
     try:
-        kg_dbs = {kg_db.kg_name: kg_db for kg_db in kg_dbs}
-        kg_dbs_in_sql = db.query(model.KGDB).filter(model.KGDB.kg_name.in_(kg_dbs.keys())).all()
-        kg_dbs_in_sql = {kg_db.kg_name: kg_db for kg_db in kg_dbs_in_sql}
-        for kg_name in kg_dbs.keys():
-            kg_dbs_in_sql[kg_name].valid = kg_dbs[kg_name].valid
-        db.merge(kg_dbs_in_sql)
+        db.bulk_update_mappings(model.KGDB, mappings)
         db.commit()
     except Exception as e:
         raise SQLException("更新kg_dbs失败") from e
@@ -65,7 +60,7 @@ def update_kg_dbs(db: Session, kg_dbs: List[schema.KGDBUpdate]):
 
 def delete_kg_db(db: Session, kg_name: str):
     try:
-        kg_db = db.query(model.KGDB).filter(model.KGDB.kg_name == kg_name).first()
+        kg_db = db.query(model.KGDB).filter(model.KGDB.kg_name==kg_name).first()
         db.delete(kg_db)
         db.commit()
     except Exception as e:

@@ -3,7 +3,6 @@ import os
 import streamlit as st
 from streamlit_option_menu import option_menu
 
-from func.llm_chatbot.page.admin import admin_page
 from func.llm_chatbot.page.llm_chatbot import llm_chatbot_page
 from func.llm_chatbot.page.retriver import retrieval_page
 
@@ -33,11 +32,6 @@ if __name__ == "__main__":
             "func": retrieval_page,
         },
     }
-    if st.query_params.get('mode') == 'admin':
-        pages['后台管理'] = {
-            'func': admin_page,
-        }
-
     with st.sidebar:
         st.image(
             os.path.join(

@@ -1,13 +1,13 @@
 from typing import Annotated
 
 import uvicorn
-from fastapi import File, HTTPException, Depends, Form
+from fastapi import File, HTTPException, Depends, Form, Body
 from fastapi.exceptions import ValidationException
 from fastapi_offline import FastAPIOffline
 from sqlalchemy.orm import Session
 
 from func.llm_chatbot.server import crud, schema
-from func.llm_chatbot.server.crud import InvalidFileFormatException
+from func.llm_chatbot.server.crud import InvalidFileFormatException, SQLException
 from func.llm_chatbot.server.database import SessionLocal
 
 app = FastAPIOffline()
@@ -44,21 +44,33 @@ async def create_kg_db(db: Annotated[Session, Depends(get_db)],
         crud.create_kg_db(db, kg_db_tarfile, item)
     except InvalidFileFormatException as e:
         raise HTTPException(404, detail=e.msg)
+    except SQLException as e:
+        raise HTTPException(404, detail=e.msg)
 
 
 @app.get("/kg_db/", response_model=list[schema.KGDB])
 async def read_kg_dbs(db: Annotated[Session, Depends(get_db)]):
-    return crud.read_kg_dbs(db)
+    try:
+        return crud.read_kg_dbs(db)
+    except SQLException as e:
+        raise HTTPException(404, detail=e.msg)
 
 
 @app.put("/kg_db/")
-async def update_kg_dbs(db: Annotated[Session, Depends(get_db)], kg_dbs: list[schema.KGDBUpdate]):
-    return crud.update_kg_dbs(db, kg_dbs)
+async def update_kg_dbs(db: Annotated[Session, Depends(get_db)],
+                        mappings: Annotated[list[dict[str, str | bool]], Body()]):
+    try:
+        crud.update_kg_dbs(db, mappings)
+    except SQLException as e:
+        raise HTTPException(404, detail=e.msg)
 
 
 @app.delete('/kg_db/{kg_name}')
 async def delete_kg_db(db: Annotated[Session, Depends(get_db)], kg_name: str):
-    return crud.delete_kg_db(db, kg_name)
+    try:
+        crud.delete_kg_db(db, kg_name)
+    except SQLException as e:
+        raise HTTPException(404, detail=e.msg)
 
 
 if __name__ == "__main__":

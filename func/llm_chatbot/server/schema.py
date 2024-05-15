@@ -19,11 +19,11 @@ class LLMCreate(LLMBase):
 
 class KGDBBase(BaseModel):
     kg_name: str
-    valid: bool
 
 
 class KGDB(KGDBBase):
     kg_type: str
+    valid: bool
 
     class Config:
         orm_mode = True
@@ -31,9 +31,5 @@ class KGDB(KGDBBase):
 
 class KGDBCreate(KGDBBase):
     kg_type: str
-
-
-class KGDBUpdate(KGDBBase):
-    pass
-
+    valid: bool
 
