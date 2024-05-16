@@ -46,7 +46,7 @@ if __name__ == "__main__":
             options=options,
             default_index=default_index)
         st.markdown("""
-        Keyword: 算法演示，个人助手，数据分析，可视化        
+        Keyword: 算法展示，数据可视化
         """)
 
     if selected_page in pages:

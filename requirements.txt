@@ -26,5 +26,4 @@ streamlit-aggrid
 fastapi
 uvicorn
 fastapi-offline
-
-
+requests

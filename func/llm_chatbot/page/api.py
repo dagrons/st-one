@@ -7,27 +7,13 @@ from typing import List, Tuple, Iterator, Any, Dict
 import requests
 
 from func.llm_chatbot.server import schema
+from settings import SUPPORTED_MODEL_NAMES
 
 
 class BaseAPI(ABC):
 
     @abstractmethod
     def read_kg_dbs(self) -> List[schema.KGDB]:
-        """
-
-        :return:
-        """
-        ...
-
-    @abstractmethod
-    def create_kg_db(self, uploaded_file: io.BytesIO, uploaded_filename: str, upload_kg_type: str):
-        """
-
-        :param upload_kg_type:
-        :param uploaded_filename:
-        :param uploaded_file:
-        :return:
-        """
         ...
 
     @abstractmethod
@@ -65,61 +51,8 @@ class BaseAPI(ABC):
         ...
 
     @abstractmethod
-    def agent_chat(self,
-                   agent: str,
-                   query: str,
-                   chat_history: List[Tuple[str, str]]
-                   ) -> List[str]:
-        """
-
-        :param agent:
-        :param query:
-        :param chat_history:
-        :return:
-        """
+    def read_llms(self) -> List[str]:
         ...
-
-    @abstractmethod
-    def stream_agent_chat(self,
-                          agent: str,
-                          chat_history: List[Tuple[str, str]]) -> Iterator[str | List[str]]:
-        """
-
-        :param agent:
-        :param chat_history:
-        :return:
-        """
-
-    @abstractmethod
-    def list_llm(self) -> List[str]:
-        """
-
-        :return:
-        """
-        ...
-
-    @abstractmethod
-    def list_emb(self) -> List[str]:
-        """
-
-        :return:
-        """
-
-    @abstractmethod
-    def get_emb_vector(self, query: str, emb_model) -> List[float]:
-        """
-
-        :param emb_model:
-        :param query:
-        :return:
-        """
-
-    @abstractmethod
-    def list_agent(self) -> List[str]:
-        """
-
-        :return:
-        """
 
     @abstractmethod
     def search_kg_db(self,
@@ -127,14 +60,6 @@ class BaseAPI(ABC):
                      query: str,
                      search_type: str,
                      search_kwargs: Dict[str, Any]) -> List[str]:
-        """
-
-        :param kg_name:
-        :param query:
-        :param search_type:
-        :param search_kwargs:
-        :return:
-        """
         ...
 
 
@@ -143,23 +68,8 @@ class DummyAPI(BaseAPI):
     def create_kg_db(self, uploaded_file: io.BytesIO, uploaded_filename: str, upload_kg_type):
         pass
 
-    def agent_chat(self, agent: str, query: str, chat_history: List[Tuple[str, str]]) -> List[str]:
-        pass
-
-    def stream_agent_chat(self, agent: str, chat_history: List[Tuple[str, str]]) -> Iterator[str | List[str]]:
-        pass
-
-    def list_emb(self) -> List[str]:
-        return ['m3e-base', 'paraphrase-MiniLM-L6-v2']
-
-    def get_emb_vector(self, query: str, emb_model: str) -> List[float]:
-        return [0.1 * 100]
-
-    def list_agent(self) -> List[str]:
-        pass
-
-    def list_llm(self) -> List[str]:
-        return ['dummy_model']
+    def read_llms(self) -> List[str]:
+        return SUPPORTED_MODEL_NAMES
 
     def chat(self, model: str = "qwen:0.5b", kg_name: str = "m3e-base", chat_history: List[Tuple[str, str]] = [],
              enable_rag: bool = False) -> str | Tuple[str, str]:
@@ -214,23 +124,8 @@ class RequestAPI(BaseAPI):
                     enable_rag: bool = False) -> Iterator[str | List[str]]:
         pass
 
-    def agent_chat(self, agent: str, query: str, chat_history: List[Tuple[str, str]]) -> List[str]:
-        pass
-
-    def stream_agent_chat(self, agent: str, chat_history: List[Tuple[str, str]]) -> Iterator[str | List[str]]:
-        pass
-
-    def list_llm(self) -> List[str]:
-        pass
-
-    def list_emb(self) -> List[str]:
-        pass
-
-    def get_emb_vector(self, query: str, emb_model) -> List[float]:
-        pass
-
-    def list_agent(self) -> List[str]:
-        pass
+    def read_llms(self) -> List[str]:
+        return SUPPORTED_MODEL_NAMES
 
     def read_kg_dbs(self) -> List[schema.KGDB]:
         url = self.endpoint + '/kg_dbs/'
@@ -243,5 +138,3 @@ class RequestAPI(BaseAPI):
 
 dummy_api = DummyAPI()
 request_api = RequestAPI()
-
-
