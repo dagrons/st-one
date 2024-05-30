@@ -14,7 +14,6 @@ def llm_chatbot_page():
         kg_db_list = dummy_api.read_kg_dbs()
         llm_list = dummy_api.read_llms()
         selected_model = st.selectbox("语言模型", options=llm_list)
-        selected_db = st.selectbox("数据库", options=kg_db_list)
     with c2:
         with st.popover(":hammer_and_wrench:"):
             enable_rag = st.checkbox("开启RAG")
@@ -41,7 +40,7 @@ def llm_chatbot_page():
             with msg:
                 placeholder = st.empty()
                 resp = ''
-                stream = dummy_api.stream_chat(selected_model, selected_db, chat_history=[], enable_rag=enable_rag)
+                stream = dummy_api.stream_chat(selected_model, chat_history=[], enable_rag=enable_rag)
                 if enable_rag:
                     source_documents = next(stream)
                 for token in stream:

@@ -1,15 +1,10 @@
 import streamlit as st
-from streamlit import spinner
 
 from func.llm_chatbot.page.api import dummy_api
 
 
 def retrieval_page():
     st.title("知识库检索")
-    with st.sidebar:
-        with spinner("正在获取数据库列表"):
-            kg_db_list = dummy_api.read_kg_dbs()
-        selected_kg_name = st.selectbox('数据库', options=kg_db_list)
     col1, col2 = st.columns([8, 1])
     with col1:
         prompt = st.text_input("输入你想检索的内容", label_visibility="collapsed")
@@ -27,5 +22,5 @@ def retrieval_page():
                 lambda_mult = st.number_input('lambda mult', min_value=0., max_value=100., value=0.25, step=0.01)
                 search_kwargs = {'k': k, 'lambda_mult': lambda_mult}
     if prompt:
-        result = dummy_api.search_kg_db(selected_kg_name, prompt, search_type, search_kwargs)
+        result = dummy_api.search_kg_db(prompt, search_type, search_kwargs)
         st.write(result)
