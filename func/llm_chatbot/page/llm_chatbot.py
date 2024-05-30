@@ -1,4 +1,4 @@
-from typing import Tuple, List
+from typing import Tuple, List, Union
 
 import streamlit as st
 
@@ -7,12 +7,12 @@ from func.llm_chatbot.page.api import dummy_api
 
 def llm_chatbot_page():
     st.title("QA问答")
-    c1, c2, _ = st.columns([1, 1, 5])
+    c1, c2, _ = st.columns([1.1, 1, 5])
     with c1:
         clear_history = st.button("清空会话", type="primary")
     with st.sidebar:
         kg_db_list = dummy_api.read_kg_dbs()
-        llm_list = dummy_api.list_llm()
+        llm_list = dummy_api.read_llms()
         selected_model = st.selectbox("语言模型", options=llm_list)
         selected_db = st.selectbox("数据库", options=kg_db_list)
     with c2:
@@ -22,7 +22,7 @@ def llm_chatbot_page():
             enable_history = st.checkbox("关联历史会话")
     prompt_input = st.chat_input(f"你好，我是{selected_model}，您有什么问题想问我吗？")
     if 'chat_history' not in st.session_state or clear_history:
-        st.session_state.chat_history: List[Tuple[str, Tuple[str, str]|str]]= []
+        st.session_state.chat_history: List[Tuple[str, Union[Tuple[str, str], str]]]= []
     chat_history = st.session_state.chat_history
     msg_holder = st.empty()
     with msg_holder.container():

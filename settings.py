@@ -1,12 +1,12 @@
 import logging.config
 from pathlib import Path
-from typing import List, Dict, Tuple
+from typing import List, Dict, Tuple, Union
 
 DATA_BASE_PATH = Path("D:")
 
 KG_DB_BASE_PATH = DATA_BASE_PATH / 'kg_db'
 
-SUPPORTED_MODELS: Dict[str, List[str|Tuple[str, str]]]= {
+SUPPORTED_MODELS: Dict[str, List[Union[str, Tuple[str, str]]]]= {
     'ollama': [
         'wizardlm2',
         'llama3:7b'

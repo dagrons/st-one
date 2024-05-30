@@ -2,7 +2,7 @@ import io
 import json
 import time
 from abc import ABC, abstractmethod
-from typing import List, Tuple, Iterator, Any, Dict
+from typing import List, Tuple, Iterator, Any, Dict, Union
 
 import requests
 
@@ -22,7 +22,7 @@ class BaseAPI(ABC):
              kg_name: str = "m3e-base",
              chat_history: List[Tuple[str, str]] = [],
              enable_rag: bool = False,
-             ) -> str | Tuple[str, str]:
+             ) -> Union[str, Tuple[str, str]]:
         """
         聊天统一接口
         :param model: llm模型
@@ -39,7 +39,7 @@ class BaseAPI(ABC):
                     kg_name: str = "m3e-base",
                     chat_history: List[Tuple[str, str]] = [],
                     enable_rag: bool = False,
-                    ) -> Iterator[str | List[str]]:
+                    ) -> Iterator[Union[str, List[str]]]:
         """
         流式输出接口
         :param model:
@@ -72,14 +72,15 @@ class DummyAPI(BaseAPI):
         return SUPPORTED_MODEL_NAMES
 
     def chat(self, model: str = "qwen:0.5b", kg_name: str = "m3e-base", chat_history: List[Tuple[str, str]] = [],
-             enable_rag: bool = False) -> str | Tuple[str, str]:
+             enable_rag: bool = False) -> Union[str, Tuple[str, str]]:
         if enable_rag:
             return [('你也好'), ('source, 你好')]
         else:
             return '你也好'
 
     def stream_chat(self, model: str = "qwen:0.5b", kg_name: str = None,
-                    chat_history: List[Tuple[str, str]] = [], enable_rag: bool = False) -> Iterator[str | List[str]]:
+                    chat_history: List[Tuple[str, str]] = [], enable_rag: bool = False) -> Iterator[
+        Union[str, List[str]]]:
         if enable_rag:
             yield ['dummy_source_documents']
             for i in range(10):
@@ -117,11 +118,11 @@ class RequestAPI(BaseAPI):
         return res
 
     def chat(self, model: str = "qwen:0.5b", kg_name: str = "m3e-base", chat_history: List[Tuple[str, str]] = [],
-             enable_rag: bool = False) -> str | Tuple[str, str]:
+             enable_rag: bool = False) -> Union[str, Tuple[str, str]]:
         pass
 
     def stream_chat(self, model: str = "qwen:0.5b", kg_name: str = "m3e-base", chat_history: List[Tuple[str, str]] = [],
-                    enable_rag: bool = False) -> Iterator[str | List[str]]:
+                    enable_rag: bool = False) -> Iterator[Union[str, List[str]]]:
         pass
 
     def read_llms(self) -> List[str]:
