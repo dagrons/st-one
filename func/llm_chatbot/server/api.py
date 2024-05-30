@@ -1,5 +1,5 @@
 import logging
-from typing import Annotated
+from typing import Annotated, Union
 
 import uvicorn
 from fastapi import File, HTTPException, Depends, Form, Body
@@ -64,7 +64,7 @@ async def read_kg_dbs(db: Annotated[Session, Depends(get_db)]):
 
 @app.put("/kg_db/")
 async def update_kg_dbs(db: Annotated[Session, Depends(get_db)],
-                        mappings: Annotated[list[dict[str, str | bool]], Body()]):
+                        mappings: Annotated[list[dict[str, Union[str, bool]]], Body()]):
     try:
         crud.update_kg_dbs(db, mappings)
     except Exception as e:
