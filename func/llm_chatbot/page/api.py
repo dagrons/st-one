@@ -70,10 +70,10 @@ class DummyAPI(BaseAPI):
         if enable_rag:
             yield ['dummy_source_documents']
             for i in range(10):
-                time.sleep(0.5)
+                time.sleep(1)
                 yield 'dummy token'
         for i in range(10):
-            time.sleep(0.5)
+            time.sleep(1)
             yield 'dummy token'
 
     def read_kg_dbs(self) -> Dict[str, bool]:
