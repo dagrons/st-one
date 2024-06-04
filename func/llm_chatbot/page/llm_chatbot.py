@@ -13,9 +13,9 @@ class ConversationItem(BaseModel):
 
 def llm_chatbot_page():
     st.title("QA问答")
-    c1, c2, _ = st.columns([1.1, 1, 5])
+    c1, c2, _ = st.columns([0.5, 0.5, 5])
     with c1:
-        clear_history = st.button("清空会话", type="primary")
+        clear_history = st.button(":wastebasket:", type="secondary")
     with st.sidebar:
         kg_db_list = dummy_api.read_kg_dbs()
         llm_list = dummy_api.read_llms()
