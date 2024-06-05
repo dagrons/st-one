@@ -54,10 +54,14 @@ def llm_chatbot_page():
                 stream = dummy_api.stream_chat(selected_model, chat_history=[], enable_rag=enable_rag)
                 if enable_rag:
                     source_documents = next(stream)
+                    with response_holder.container():
+                        if enable_show_ref:
+                            st.markdown(source_documents)
                 for token in stream:
                     resp += token
-                    response_holder.markdown(resp)
+                    with response_holder.container():
+                        st.markdown(resp)
+                        if enable_show_ref:
+                            st.markdown(source_documents)
                     last_history_item = (prompt_input, (resp, source_documents) if enable_rag else resp)
                     chat_history[len(chat_history) - 1] = last_history_item
-                if enable_show_ref:
-                    st.markdown(source_documents)
