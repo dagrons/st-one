@@ -39,24 +39,14 @@ class BaseAPI(ABC):
         ...
 
     @abstractmethod
-    def read_llms(self) -> List[str]:
-        ...
-
-    @abstractmethod
     def search_kg_db(self,
                      query: str,
                      search_type: str,
                      search_kwargs: Dict[str, Any]) -> List[str]:
         ...
 
-    @abstractmethod
-    def read_kg_dbs(self) -> Dict[str, bool]:
-        ...
-
 
 class DummyAPI(BaseAPI):
-    def read_llms(self) -> List[str]:
-        return SUPPORTED_MODEL_NAMES
 
     def chat(self, model: str = "qwen:0.5b", chat_history: List[Tuple[str, str]] = [],
              enable_rag: bool = False) -> Union[str, Tuple[str, str]]:
@@ -65,7 +55,8 @@ class DummyAPI(BaseAPI):
         else:
             return '你也好'
 
-    def stream_chat(self, model: str = "qwen:0.5b", chat_history: List[Tuple[str, str]] = [], enable_rag: bool = False) -> Iterator[
+    def stream_chat(self, model: str = "qwen:0.5b", chat_history: List[Tuple[str, str]] = [],
+                    enable_rag: bool = False) -> Iterator[
         Union[str, List[str]]]:
         if enable_rag:
             yield ['dummy_source_documents']
@@ -76,9 +67,6 @@ class DummyAPI(BaseAPI):
             time.sleep(1)
             yield 'dummy token'
 
-    def read_kg_dbs(self) -> Dict[str, bool]:
-        return {'dummy_kg1': True, 'dummy_kg2': True, 'dummy_kg3': False}
-
     def search_kg_db(self, query: str, search_type: str, search_kwargs: Dict[str, Any]) -> List[str]:
         return [
             'dummy_recall'
@@ -88,9 +76,6 @@ class DummyAPI(BaseAPI):
 class RequestAPI(BaseAPI):
     endpoint = "http://localhost:8000"
 
-    def read_kg_dbs(self) -> Dict[str, bool]:
-        pass
-
     def chat(self, model: str = "qwen:0.5b", chat_history: List[Tuple[str, str]] = [],
              enable_rag: bool = False) -> Union[str, Tuple[str, str]]:
         pass
@@ -98,9 +83,6 @@ class RequestAPI(BaseAPI):
     def stream_chat(self, model: str = "qwen:0.5b", chat_history: List[Tuple[str, str]] = [],
                     enable_rag: bool = False) -> Iterator[Union[str, List[str]]]:
         pass
-
-    def read_llms(self) -> List[str]:
-        return SUPPORTED_MODEL_NAMES
 
     def search_kg_db(self, query: str, search_type: str, search_kwargs: Dict[str, Any]) -> List[str]:
         pass
