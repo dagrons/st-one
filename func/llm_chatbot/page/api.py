@@ -1,32 +1,18 @@
+import json
 import time
 from abc import ABC, abstractmethod
 from typing import List, Tuple, Iterator, Any, Dict, Union
 
-from settings import SUPPORTED_MODEL_NAMES
+import requests
 
 
 class BaseAPI(ABC):
-    @abstractmethod
-    def chat(self,
-             model: str = "qwen:0.5b",
-             chat_history: List[Tuple[str, str]] = [],
-             enable_rag: bool = False,
-             ) -> Union[str, Tuple[str, str]]:
-        """
-        聊天统一接口
-        :param model: llm模型
-        :param kg_name: 嵌入模型，用于rag
-        :param chat_history:
-        :param enable_rag:
-        :return: str if only anwser, Tuple[str, str] if anwser and source_documents
-        """
-        ...
 
     @abstractmethod
     def stream_chat(self,
-                    model: str = "qwen:0.5b",
+                    model: str,
+                    prompt: str,
                     chat_history: List[Tuple[str, str]] = [],
-                    enable_rag: bool = False,
                     ) -> Iterator[Union[str, List[str]]]:
         """
         流式输出接口
@@ -48,21 +34,9 @@ class BaseAPI(ABC):
 
 class DummyAPI(BaseAPI):
 
-    def chat(self, model: str = "qwen:0.5b", chat_history: List[Tuple[str, str]] = [],
-             enable_rag: bool = False) -> Union[str, Tuple[str, str]]:
-        if enable_rag:
-            return [('你也好'), ('source, 你好')]
-        else:
-            return '你也好'
-
-    def stream_chat(self, model: str = "qwen:0.5b", chat_history: List[Tuple[str, str]] = [],
-                    enable_rag: bool = False) -> Iterator[
+    def stream_chat(self, model: str, prompt:str, chat_history: List[Tuple[str, str]] = []) -> Iterator[
         Union[str, List[str]]]:
-        if enable_rag:
-            yield ['dummy_source_documents']
-            for i in range(10):
-                time.sleep(1)
-                yield 'dummy token'
+        yield ['dummy_source_documents']
         for i in range(10):
             time.sleep(1)
             yield 'dummy token'
@@ -76,13 +50,33 @@ class DummyAPI(BaseAPI):
 class RequestAPI(BaseAPI):
     endpoint = "http://localhost:8000"
 
-    def chat(self, model: str = "qwen:0.5b", chat_history: List[Tuple[str, str]] = [],
-             enable_rag: bool = False) -> Union[str, Tuple[str, str]]:
-        pass
-
-    def stream_chat(self, model: str = "qwen:0.5b", chat_history: List[Tuple[str, str]] = [],
-                    enable_rag: bool = False) -> Iterator[Union[str, List[str]]]:
-        pass
+    def stream_chat(self, model: str, prompt: str, chat_history: List[Tuple[str, str]] = []) -> Iterator[
+        Union[str, List[str]]]:
+        path = "/chat/generate"
+        s = requests.Session()
+        with s.post(url=f"{self.endpoint}{path}?model={model}&prompt={prompt}", json=chat_history, stream=True) as resp:
+            buffer = b""
+            source_documents = ""
+            in_source_documents = True
+            for chunk in resp.iter_content(chunk_size=1, decode_unicode=True):
+                if chunk:
+                    buffer += chunk
+                while buffer:
+                    try:
+                        char = buffer.decode("utf-8")
+                        if in_source_documents:
+                            if source_documents.endswith("</docs>"):
+                                source_documents = source_documents[:source_documents.find("</docs>")]
+                                source_documents = source_documents[source_documents.find("<docs>") + len("<docs>"):]
+                                yield json.loads(source_documents)
+                                in_source_documents = False
+                            else:
+                                source_documents += char
+                        else:
+                            yield char
+                        buffer = b""
+                    except UnicodeDecodeError:
+                        break
 
     def search_kg_db(self, query: str, search_type: str, search_kwargs: Dict[str, Any]) -> List[str]:
         pass
@@ -90,3 +84,5 @@ class RequestAPI(BaseAPI):
 
 dummy_api = DummyAPI()
 request_api = RequestAPI()
+
+

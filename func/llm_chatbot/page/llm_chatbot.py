@@ -1,14 +1,8 @@
 from typing import Tuple, List, Union
 
 import streamlit as st
-from pydantic import BaseModel
 
-from func.llm_chatbot.page.api import dummy_api
-
-
-class ConversationItem(BaseModel):
-    human_message: str
-    ai_message: Union[str, Tuple[str, str]]
+from func.llm_chatbot.page.api import request_api
 
 
 def llm_chatbot_page():
@@ -17,51 +11,42 @@ def llm_chatbot_page():
     with c1:
         clear_history = st.button(":wastebasket:", type="secondary")
     with st.sidebar:
-        kg_db_list = dummy_api.read_kg_dbs()
-        llm_list = dummy_api.read_llms()
-        selected_model = st.selectbox("语言模型", options=llm_list)
-    with c2:
-        with st.popover(":hammer_and_wrench:"):
-            enable_rag = st.checkbox("开启RAG")
-            enable_show_ref = enable_rag and st.checkbox("显示召回")
-            enable_history = st.checkbox("关联历史会话")
+        selected_model = st.selectbox("语言模型", options=['Qwen1.5-0.5B-Chat'])
     prompt_input = st.chat_input(f"你好，我是{selected_model}，您有什么问题想问我吗？")
     if 'chat_history' not in st.session_state or clear_history:
-        st.session_state.chat_history: List[ConversationItem] = []
+        st.session_state.chat_history: List[Tuple[str, Union[str, Tuple[str, str]]]] = []
+        st.session_state.chat_history.append(('system', 'you are a helpful assistant'))
     chat_history = st.session_state.chat_history
 
     chat_history_holder = st.empty()
     with chat_history_holder.container():
-        for conversation in chat_history:
-            if conversation is None:
-                continue
-            human_msg, ai_msg = conversation
-            st.chat_message('user').markdown(human_msg)
-            if isinstance(ai_msg, str):
-                st.chat_message('assistant').markdown(ai_msg)
+        for message in chat_history:
+            role, content = message
+            if isinstance(content, str):
+                st.chat_message(role).markdown(content)
             else:
-                with st.chat_message('assistant'):
-                    st.markdown(ai_msg[0])
-                    if enable_show_ref:
-                        st.markdown(ai_msg[1])
+                with st.chat_message(role):
+                    st.markdown(content[1])
+                    st.markdown(content[0])
         if prompt_input:
-            chat_history.append(None)
             st.chat_message('user').markdown(prompt_input)
-            ai_msg_holder = st.chat_message('assistant')
+            chat_history.append(('user', prompt_input))
+            ai_msg_holder = st.chat_message('ai')
             with ai_msg_holder:
                 response_holder = st.empty()
                 resp = ''
-                stream = dummy_api.stream_chat(selected_model, chat_history=[], enable_rag=enable_rag)
-                if enable_rag:
-                    source_documents = next(stream)
-                    with response_holder.container():
-                        if enable_show_ref:
-                            st.markdown(source_documents)
+                stream = request_api.stream_chat(selected_model, prompt_input, chat_history=[])
+                source_documents = next(stream)
+                with response_holder.container():
+                    st.markdown(source_documents)
+                flag = True
                 for token in stream:
                     resp += token
                     with response_holder.container():
                         st.markdown(resp)
-                        if enable_show_ref:
-                            st.markdown(source_documents)
-                    last_history_item = (prompt_input, (resp, source_documents) if enable_rag else resp)
-                    chat_history[len(chat_history) - 1] = last_history_item
+                        st.markdown(source_documents)
+                    if flag:
+                        chat_history.append(('ai', (source_documents, resp)))
+                        flag = False
+                    else:
+                        chat_history[len(chat_history) - 1] = ('ai', (source_documents, resp))
