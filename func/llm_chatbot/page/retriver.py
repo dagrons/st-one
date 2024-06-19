@@ -1,6 +1,6 @@
 import streamlit as st
 
-from func.llm_chatbot.page.api import dummy_api
+from func.llm_chatbot.page.api import dummy_api, request_api
 
 
 def retrieval_page():
@@ -22,5 +22,5 @@ def retrieval_page():
                 lambda_mult = st.number_input('lambda mult', min_value=0., max_value=100., value=0.25, step=0.01)
                 search_kwargs = {'k': k, 'lambda_mult': lambda_mult}
     if prompt:
-        result = dummy_api.search_kg_db(prompt, search_type, search_kwargs)
+        result = request_api.search_kg_db(prompt, search_type, search_kwargs)
         st.write(result)

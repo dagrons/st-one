@@ -78,7 +78,10 @@ class RequestAPI(BaseAPI):
                         break
 
     def search_kg_db(self, query: str, search_type: str, search_kwargs: Dict[str, Any]) -> List[str]:
-        pass
+        path = '/search'
+        s = requests.Session()
+        with s.post(url=f"{self.endpoint}{path}?search_type={search_type}", json={'query': query, 'search_kwargs': search_kwargs}) as resp:
+            return resp.json()
 
 
 dummy_api = DummyAPI()
