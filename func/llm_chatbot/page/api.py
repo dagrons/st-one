@@ -34,7 +34,7 @@ class BaseAPI(ABC):
 
 class DummyAPI(BaseAPI):
 
-    def stream_chat(self, model: str, prompt:str, chat_history: List[Tuple[str, str]] = []) -> Iterator[
+    def stream_chat(self, model: str, prompt: str, chat_history: List[Tuple[str, str]] = []) -> Iterator[
         Union[str, List[str]]]:
         yield ['dummy_source_documents']
         for i in range(10):
@@ -58,20 +58,19 @@ class RequestAPI(BaseAPI):
             buffer = b""
             source_documents = ""
             in_source_documents = True
-            for chunk in resp.iter_content(chunk_size=1, decode_unicode=True):
+            for chunk in resp.iter_content(chunk_size=1, decode_unicode=False):
                 if chunk:
                     buffer += chunk
                 while buffer:
                     try:
                         char = buffer.decode("utf-8")
                         if in_source_documents:
+                            source_documents += char
                             if source_documents.endswith("</docs>"):
                                 source_documents = source_documents[:source_documents.find("</docs>")]
                                 source_documents = source_documents[source_documents.find("<docs>") + len("<docs>"):]
                                 yield json.loads(source_documents)
                                 in_source_documents = False
-                            else:
-                                source_documents += char
                         else:
                             yield char
                         buffer = b""
@@ -84,5 +83,3 @@ class RequestAPI(BaseAPI):
 
 dummy_api = DummyAPI()
 request_api = RequestAPI()
-
-

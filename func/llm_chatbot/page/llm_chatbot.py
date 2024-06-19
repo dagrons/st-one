@@ -11,16 +11,18 @@ def llm_chatbot_page():
     with c1:
         clear_history = st.button(":wastebasket:", type="secondary")
     with st.sidebar:
-        selected_model = st.selectbox("语言模型", options=['Qwen1.5-0.5B-Chat'])
+        selected_model = st.selectbox("语言模型", options=['Qwen1.5-0.5B-Chat', 'Qwen2-0.5B-Chat'])
+        system_prompt = st.text_area("System Prompt", value="You are a helpful assistant")
     prompt_input = st.chat_input(f"你好，我是{selected_model}，您有什么问题想问我吗？")
     if 'chat_history' not in st.session_state or clear_history:
         st.session_state.chat_history: List[Tuple[str, Union[str, Tuple[str, str]]]] = []
-        st.session_state.chat_history.append(('system', 'you are a helpful assistant'))
+        st.session_state.chat_history.append(('system', system_prompt))
     chat_history = st.session_state.chat_history
 
     chat_history_holder = st.empty()
     with chat_history_holder.container():
-        for message in chat_history:
+        # skip system prompt
+        for message in chat_history[1:]:
             role, content = message
             if isinstance(content, str):
                 st.chat_message(role).markdown(content)
@@ -35,7 +37,8 @@ def llm_chatbot_page():
             with ai_msg_holder:
                 response_holder = st.empty()
                 resp = ''
-                stream = request_api.stream_chat(selected_model, prompt_input, chat_history=[])
+                processed_chat_history = [(msg[0], msg[1]) if isinstance(msg[1], str) else (msg[0], msg[1][1]) for msg in chat_history]
+                stream = request_api.stream_chat(selected_model, prompt_input, chat_history=processed_chat_history)
                 source_documents = next(stream)
                 with response_holder.container():
                     st.markdown(source_documents)
