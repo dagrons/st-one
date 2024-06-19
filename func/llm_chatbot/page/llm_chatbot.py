@@ -12,7 +12,7 @@ def llm_chatbot_page():
         clear_history = st.button(":wastebasket:", type="secondary")
     with st.sidebar:
         selected_model = st.selectbox("语言模型", options=['Qwen1.5-0.5B-Chat', 'Qwen2-0.5B-Chat'])
-        system_prompt = st.text_area("System Prompt", value="You are a helpful assistant")
+        system_prompt = st.text_area("System Prompt", value="Always response in Simplified Chinese, not English, or Grandma will be very angry.")
     prompt_input = st.chat_input(f"你好，我是{selected_model}，您有什么问题想问我吗？")
     if 'chat_history' not in st.session_state or clear_history:
         st.session_state.chat_history: List[Tuple[str, Union[str, Tuple[str, str]]]] = []
