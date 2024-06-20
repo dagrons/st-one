@@ -47,13 +47,10 @@ def llm_chatbot_page():
                         st.write(source_documents)
                 is_first_token = True
                 last_gen_time = time.time()
-                count = 0
                 for token in stream:
-                    count += 1
                     now_time = time.time()
-                    if now_time - last_gen_time >= 2.0:
-                        generation_speed_placeholder.metric('Generation Speed', f"{count / (now_time - last_gen_time):.2} token/s")
-                        count = 0
+                    if now_time - last_gen_time > 0.:
+                        generation_speed_placeholder.metric('Generation Speed', f"{1 / (now_time - last_gen_time):.2} token/s")
                         last_gen_time = now_time
                     resp += token
                     with response_holder.container():
