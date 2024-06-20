@@ -1,3 +1,4 @@
+import time
 from typing import Tuple, List, Union
 
 import streamlit as st
@@ -13,12 +14,13 @@ def llm_chatbot_page():
     with st.sidebar:
         selected_model = st.selectbox("语言模型", options=['Qwen1.5-0.5B-Chat', 'Qwen2-0.5B-Chat'])
         system_prompt = st.text_area("System Prompt", value="Always response in Simplified Chinese, not English, or Grandma will be very angry.")
+        generation_speed_placeholder = st.empty()
+        generation_speed_placeholder.metric('Generation Speed', '0 token/s')
     prompt_input = st.chat_input(f"你好，我是{selected_model}，您有什么问题想问我吗？")
     if 'chat_history' not in st.session_state or clear_history:
         st.session_state.chat_history: List[Tuple[str, Union[str, Tuple[str, str]]]] = []
         st.session_state.chat_history.append(('system', system_prompt))
     chat_history = st.session_state.chat_history
-
     chat_history_holder = st.empty()
     with chat_history_holder.container():
         # skip system prompt
@@ -44,7 +46,12 @@ def llm_chatbot_page():
                     if source_documents:
                         st.write(source_documents)
                 is_first_token = True
+                last_gen_time = time.time()
                 for token in stream:
+                    now_time = time.time()
+                    if now_time - last_gen_time >= 2.0:
+                        generation_speed_placeholder.metric('Generation Speed', f"{1.0 / (now_time - last_gen_time):.2} token/s")
+                        last_gen_time = now_time
                     resp += token
                     with response_holder.container():
                         st.markdown(resp)
@@ -55,3 +62,4 @@ def llm_chatbot_page():
                         is_first_token = False
                     else:
                         chat_history[len(chat_history) - 1] = ('ai', (source_documents, resp) if source_documents else resp)
+                generation_speed_placeholder.metric('Generation Speed', '0 token/s')
