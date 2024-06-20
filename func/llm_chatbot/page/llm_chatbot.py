@@ -41,15 +41,17 @@ def llm_chatbot_page():
                 stream = request_api.stream_chat(selected_model, prompt_input, chat_history=processed_chat_history)
                 source_documents = next(stream)
                 with response_holder.container():
-                    st.markdown(source_documents)
-                flag = True
+                    if source_documents:
+                        st.write(source_documents)
+                is_first_token = True
                 for token in stream:
                     resp += token
                     with response_holder.container():
                         st.markdown(resp)
-                        st.markdown(source_documents)
-                    if flag:
-                        chat_history.append(('ai', (source_documents, resp)))
-                        flag = False
+                        if source_documents:
+                            st.write(source_documents)
+                    if is_first_token:
+                        chat_history.append(('ai', (source_documents, resp) if source_documents else resp))
+                        is_first_token = False
                     else:
-                        chat_history[len(chat_history) - 1] = ('ai', (source_documents, resp))
+                        chat_history[len(chat_history) - 1] = ('ai', (source_documents, resp) if source_documents else resp)
