@@ -50,7 +50,7 @@ def llm_chatbot_page():
                 for token in stream:
                     now_time = time.time()
                     if now_time - last_gen_time > 0.:
-                        generation_speed_placeholder.metric('Generation Speed', f"{1 / (now_time - last_gen_time):.2} token/s")
+                        generation_speed_placeholder.metric('Generation Speed', f"{1 / (now_time - last_gen_time):.2f} token/s")
                         last_gen_time = now_time
                     resp += token
                     with response_holder.container():
