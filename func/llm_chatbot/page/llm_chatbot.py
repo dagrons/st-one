@@ -12,7 +12,7 @@ def llm_chatbot_page():
     with c1:
         clear_history = st.button(":wastebasket:", type="secondary")
     with st.sidebar:
-        selected_model = st.selectbox("语言模型", options=['openai', 'Qwen2-7B-Instruct', 'Qwen1.5-0.5B-Chat', 'Qwen2-0.5B-Chat'])
+        selected_model = st.selectbox("语言模型", options=['gpt-4', 'gpt-4o', 'Qwen2-7B-Instruct', 'Qwen1.5-0.5B-Chat', 'Qwen2-0.5B-Chat'])
         system_prompt = st.text_area("System Prompt", value="Always response in Simplified Chinese, not English, or Grandma will be very angry.")
         generation_speed_placeholder = st.empty()
         generation_speed_placeholder.metric('Generation Speed', '0 token/s')
