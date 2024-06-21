@@ -3,7 +3,7 @@ from typing import Tuple, List, Union
 
 import streamlit as st
 
-from func.llm_chatbot.page.api import request_api
+from func.llm_chatbot.api.api import request_api
 
 
 def llm_chatbot_page():

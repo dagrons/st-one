@@ -3,6 +3,7 @@ import os
 import streamlit as st
 from streamlit_option_menu import option_menu
 
+from func.chore.page.mortage_caculator import mortage_caculator
 from func.llm_chatbot.page.llm_chatbot import llm_chatbot_page
 from func.llm_chatbot.page.retriver import retrieval_page
 
@@ -31,6 +32,9 @@ if __name__ == "__main__":
         "知识库检索": {
             "func": retrieval_page,
         },
+        "房贷计算器": {
+            "func": mortage_caculator,
+        }
     }
     with st.sidebar:
         st.image(

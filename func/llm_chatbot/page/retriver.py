@@ -1,6 +1,6 @@
 import streamlit as st
 
-from func.llm_chatbot.page.api import dummy_api, request_api
+from func.llm_chatbot.api.api import request_api
 
 
 def retrieval_page():
