@@ -24,6 +24,7 @@ def mortage_caculator():
     st.title("房贷计算器")
 
     st.sidebar.header("贷款信息")
+    income = st.sidebar.number_input("月收入", min_value=0.0, value=9000.0)
     commercial_loan = st.sidebar.number_input("商业贷款额", min_value=0.0, value=0.0)
     fund_loan = st.sidebar.number_input("公积金贷款额", min_value=0.0, value=0.0)
     commercial_rate = st.sidebar.number_input("商业贷款利率（年利率，%）", min_value=0.0, value=3.95) / 100
@@ -32,9 +33,9 @@ def mortage_caculator():
     months = years * 12
 
     repayment_method = st.sidebar.selectbox("还款方式", ["等额本金", "等额本息"], help="""
-    等额本息：每月还的本金相同，利息根据没还完的本金计算,
+    等额本金：每月还的本金相同，利息根据没还完的本金计算,
     
-    等额本金：每月还的金额相同，解方程得到
+    等额本息：每月还的金额相同，解方程得到
     """)
 
     if repayment_method == "等额本金":
@@ -47,7 +48,8 @@ def mortage_caculator():
     total_repayments = np.array(commercial_repayments) + np.array(fund_repayments)
     repayment_schedule = pd.DataFrame({
         "月数": range(1, months + 1),
-        "每月还款": total_repayments
+        "每月还款": total_repayments,
+        "盈余": income - total_repayments
     })
 
     total_loan = commercial_loan + fund_loan
@@ -61,4 +63,4 @@ def mortage_caculator():
 
     st.line_chart(repayment_schedule.set_index("月数"))
 
-    st.dataframe(repayment_schedule)
+    st.dataframe(repayment_schedule, width=500)
