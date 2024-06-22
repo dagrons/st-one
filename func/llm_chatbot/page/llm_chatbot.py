@@ -12,8 +12,10 @@ def llm_chatbot_page():
     with c1:
         clear_history = st.button(":wastebasket:", type="secondary")
     with st.sidebar:
-        selected_model = st.selectbox("语言模型", options=['gpt-4', 'gpt-4o', 'Qwen2-7B-Instruct', 'Qwen1.5-0.5B-Chat', 'Qwen2-0.5B-Chat'])
-        system_prompt = st.text_area("System Prompt", value="Always response in Simplified Chinese, not English, or Grandma will be very angry.")
+        selected_model = st.selectbox("语言模型", options=['gpt-4', 'gpt-4o', 'Qwen2-7B-Instruct', 'Qwen1.5-0.5B-Chat',
+                                                           'Qwen2-0.5B-Chat'])
+        system_prompt = st.text_area("System Prompt",
+                                     value="Always response in Simplified Chinese, not English, or Grandma will be very angry.")
         generation_speed_placeholder = st.empty()
         generation_speed_placeholder.metric('Generation Speed', '0 token/s')
     prompt_input = st.chat_input(f"你好，我是{selected_model}，您有什么问题想问我吗？")
@@ -39,7 +41,8 @@ def llm_chatbot_page():
             with ai_msg_holder:
                 response_holder = st.empty()
                 resp = ''
-                processed_chat_history = [(msg[0], msg[1]) if isinstance(msg[1], str) else (msg[0], msg[1][1]) for msg in chat_history]
+                processed_chat_history = [(msg[0], msg[1]) if isinstance(msg[1], str) else (msg[0], msg[1][1]) for msg
+                                          in chat_history]
                 stream = request_api.stream_chat(selected_model, prompt_input, chat_history=processed_chat_history)
                 source_documents = next(stream)
                 with response_holder.container():
@@ -52,7 +55,8 @@ def llm_chatbot_page():
                     now_time = time.time()
                     count += 1
                     if count >= 10:
-                        generation_speed_placeholder.metric('Generation Speed', f"{count / (now_time - last_gen_time):.2f} token/s")
+                        generation_speed_placeholder.metric('Generation Speed',
+                                                            f"{count / (now_time - last_gen_time):.2f} token/s")
                         count = 0
                         last_gen_time = now_time
                     resp += token
@@ -64,5 +68,6 @@ def llm_chatbot_page():
                         chat_history.append(('ai', (source_documents, resp) if source_documents else resp))
                         is_first_token = False
                     else:
-                        chat_history[len(chat_history) - 1] = ('ai', (source_documents, resp) if source_documents else resp)
+                        chat_history[len(chat_history) - 1] = (
+                        'ai', (source_documents, resp) if source_documents else resp)
                 generation_speed_placeholder.metric('Generation Speed', '0 token/s')

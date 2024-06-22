@@ -54,7 +54,11 @@ class RequestAPI(BaseAPI):
         Union[str, List[str]]]:
         path = "/chat/generate"
         s = requests.Session()
-        with s.post(url=f"{self.endpoint}{path}?model={model}&prompt={prompt}", json=chat_history, stream=True) as resp:
+        params = {
+            "model": model,
+            "prompt": prompt
+        }
+        with s.post(url=f"{self.endpoint}{path}", params=params, json=chat_history, stream=True) as resp:
             buffer = b""
             source_documents = ""
             in_source_documents = True
@@ -80,7 +84,10 @@ class RequestAPI(BaseAPI):
     def search_kg_db(self, query: str, search_type: str, search_kwargs: Dict[str, Any]) -> List[str]:
         path = '/search'
         s = requests.Session()
-        with s.post(url=f"{self.endpoint}{path}?search_type={search_type}", json={'query': query, 'search_kwargs': search_kwargs}) as resp:
+        params = {
+            'search_type': search_type
+        }
+        with s.post(url=f"{self.endpoint}{path}", params=params, json={'query': query, 'search_kwargs': search_kwargs}) as resp:
             return resp.json()
 
 
