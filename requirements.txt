@@ -24,5 +24,19 @@ fastapi
 uvicorn
 fastapi-offline
 requests
-faiss
+faiss-cpu
+aiologger
+pytest
+pytest-asyncio
+httpx
+python-jose # contains net resource
+aiosqlite
+greenlet
+passlib
+pyvista==0.42.3
+trame
+vtk
+trame-vuetify
+trame-vtk
+
 
