@@ -24,7 +24,6 @@ def mortage_caculator():
     st.title("房贷计算器")
 
     st.sidebar.header("贷款信息")
-    income = st.sidebar.number_input("月收入", min_value=0.0, value=9000.0)
     commercial_loan = st.sidebar.number_input("商业贷款额", min_value=0.0, value=0.0)
     fund_loan = st.sidebar.number_input("公积金贷款额", min_value=0.0, value=0.0)
     commercial_rate = st.sidebar.number_input("商业贷款利率（年利率，%）", min_value=0.0, value=3.95) / 100
@@ -49,9 +48,11 @@ def mortage_caculator():
     repayment_schedule = pd.DataFrame({
         "月数": range(1, months + 1),
         "每月还款": total_repayments,
-        "盈余": income - total_repayments
     })
-
+    repayment_schedule_year = pd.DataFrame({
+        "年数": range(1, months // 12 + 1),
+        "每年还款": np.sum(np.reshape(total_repayments, (-1, 12)), axis=1)
+    })
     total_loan = commercial_loan + fund_loan
     total_repayments = sum(fund_repayments + commercial_repayments)
     st.write(f"总贷款额：{total_loan:.2f} 元")
@@ -63,4 +64,8 @@ def mortage_caculator():
 
     st.line_chart(repayment_schedule.set_index("月数"))
 
-    st.dataframe(repayment_schedule, width=500)
+    c1, c2 = st.columns(2)
+    with c1:
+        st.dataframe(repayment_schedule, width=500)
+    with c2:
+        st.dataframe(repayment_schedule_year, width=500)
