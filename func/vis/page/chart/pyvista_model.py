@@ -9,7 +9,7 @@ def vis_pyvista_model():
         pv.start_xvfb()
         start_xvfb()
         st.session_state.IS_XVFB_RUNNING = True
-    plotter = pv.Plotter(window_size=[300, 300])
+    plotter = pv.Plotter(window_size=[400, 400])
     mesh = pv.Cube(center=(0, 0, 0))
 
     mesh['myscalar'] = mesh.points[:, 2] * mesh.points[:, 0]
