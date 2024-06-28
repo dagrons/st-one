@@ -1,10 +1,4 @@
-# TODO
-
-- ConversationalRetrievalChain
-- m3e-base
-- 如何实现高并发
-
-# 离线部署清单
+### 离线部署清单
 
 先在本地成功跑通，然后导出依赖下载pkg，打包传到内网部署
 
@@ -15,7 +9,7 @@
 - dagrons.tar.gz(py310初始环境)
 - pkgs.tar.gz
 
-# 在线部署清单
+### 在线部署清单
 
 导入到aDrive，再通过aDrive下载到在线环境，更新最频繁的代码可以通过github更新
 
@@ -25,7 +19,7 @@
 - llm models
 
 
-# 隐藏Deploy Button和MainMenu
+### 隐藏Deploy Button和MainMenu
 
 ```python
 st.markdown(r"""
@@ -41,14 +35,20 @@ st.markdown(r"""
 """, unsafe_allow_html=True)
 ```
 
-# LLM APP
+### pyvista环境(wsl)
 
-就是用Prompt作为功能实现，每个Prompt对应了一个函数
+```bash
+apt install -y libglu1 \
+libxcursor-dev \
+libxft2 \
+libxinerama1 \
+libfltk1.3-dev \ 
+libfreetype6-dev  \
+libgl1-mesa-dev \
+libocct-foundation-dev \
+libocct-data-exchange-dev 
 
-在传统App中，我们用代码实现功能，在LLM APP中，我们用Prompt描述输入输出即可
+ln -s ln -s /usr/lib/x86_64-linux-gnu/swrast_dri.so /usr/lib/dri/swrast_dri.so
 
-
-# 前端接口和后端接口
-
-前端和后端的接口不是一定要一一对应的，前端需要精准的接口，后端可能需要通用的接口，自己设计自己的接口是没有问题的，在前端接口利用通用接口做个适配就好了
-
+conda install -c conda-forge gcc=12.1.0
+```
