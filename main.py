@@ -1,13 +1,16 @@
 import os
 
+import dotenv
 import streamlit as st
 from streamlit_option_menu import option_menu
 
 from func.chore.page.mortage_caculator import mortage_caculator
 from func.llm_chatbot.page.llm_chatbot import llm_chatbot_page
 from func.llm_chatbot.page.retriver import retrieval_page
+from func.vis.page.vis import vis
 
 if __name__ == "__main__":
+    dotenv.load_dotenv()
     st.set_page_config(
         "One",
         initial_sidebar_state="expanded",
@@ -34,9 +37,13 @@ if __name__ == "__main__":
         },
         "房贷计算器": {
             "func": mortage_caculator,
+        },
+        "图表可视化": {
+            "func": vis,
         }
     }
     with st.sidebar:
+        st.write(f"mode: {os.getenv('mode')}")
         st.image(
             os.path.join(
                 "img", "nyan_cat.png"
