@@ -1,5 +1,5 @@
 import pyvista as pv
-import stpyvista
+from stpyvista import stpyvista
 import streamlit as st
 
 
