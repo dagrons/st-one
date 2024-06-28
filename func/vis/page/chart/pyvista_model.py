@@ -1,25 +1,27 @@
 import pyvista as pv
 import stpyvista
 import streamlit as st
-from stpyvista.utils import start_xvfb
 
 
 def vis_pyvista_model():
-    if "IS_XVFB_RUNNING" not in st.session_state:
-        start_xvfb()
-        st.session_state.IS_XVFB_RUNNING = True
+    st.title("A cube")
+    st.info("""Code adapted from https://docs.pyvista.org/user-guide/jupyter/pythreejs.html#scalars-support""")
 
-        # 创建一个示例网格
-    mesh = pv.Sphere()
+    ## Initialize a plotter object
+    plotter = pv.Plotter(window_size=[400, 400])
 
-    # 创建一个 Plotter 对象
-    plotter = pv.Plotter()
+    ## Create a mesh with a cube
+    mesh = pv.Cube(center=(0, 0, 0))
 
-    # 向 Plotter 添加网格
-    plotter.add_mesh(mesh, color="cyan")
+    ## Add some scalar field associated to the mesh
+    mesh['myscalar'] = mesh.points[:, 2] * mesh.points[:, 0]
 
-    # 获取 Plotter 的摄像机位置
-    plotter.show(cpos="xy")
+    ## Add mesh to the plotter
+    plotter.add_mesh(mesh, scalars='myscalar', cmap='bwr')
 
-    st.title("stpyvista Demo")
-    stpyvista.show(plotter)
+    ## Final touches
+    plotter.view_isometric()
+    plotter.background_color = 'white'
+
+    ## Send to streamlit
+    stpyvista(plotter, key="pv_cube")
