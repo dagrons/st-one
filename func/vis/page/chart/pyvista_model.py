@@ -1,7 +1,6 @@
 import pyvista as pv
-import pyvista.plotting
-from stpyvista import stpyvista
 import streamlit as st
+from stpyvista import stpyvista
 
 
 def vis_pyvista_model():
