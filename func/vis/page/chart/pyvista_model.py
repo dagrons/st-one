@@ -8,6 +8,7 @@ def vis_pyvista_model():
     if "IS_XVFB_RUNNING" not in st.session_state:
         start_xvfb()
         st.session_state.IS_XVFB_RUNNING = True
+        pv.start_xvfb()
     plotter = pv.Plotter(window_size=[400, 400])
     mesh = pv.Cube(center=(0, 0, 0))
 
