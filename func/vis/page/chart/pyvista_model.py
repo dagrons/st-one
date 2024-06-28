@@ -6,6 +6,7 @@ from stpyvista.utils import start_xvfb
 
 def vis_pyvista_model():
     if "IS_XVFB_RUNNING" not in st.session_state:
+        pv.start_xvfb()
         start_xvfb()
         st.session_state.IS_XVFB_RUNNING = True
     plotter = pv.Plotter(window_size=[400, 400])
