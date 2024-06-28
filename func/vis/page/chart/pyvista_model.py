@@ -1,10 +1,13 @@
 import pyvista as pv
 import streamlit as st
 from stpyvista import stpyvista
+from stpyvista.utils import start_xvfb
 
 
 def vis_pyvista_model():
-    pv.start_xvfb()
+    if "IS_XVFB_RUNNING" not in st.session_state:
+        start_xvfb()
+        st.session_state.IS_XVFB_RUNNING = True
     plotter = pv.Plotter(window_size=[400, 400])
     mesh = pv.Cube(center=(0, 0, 0))
 
