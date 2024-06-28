@@ -1,7 +1,6 @@
 import streamlit as st
 
 from func.vis.page.chart.circle import vis_circle
-from func.vis.page.chart.map import vis_map
 from func.vis.page.chart.pyvista_model import vis_pyvista_model
 
 
@@ -10,7 +9,6 @@ def vis():
     placeholder = st.empty()
     vis_funcs = {
         'circle': vis_circle,
-        'map': vis_map,
         'pyvista_model': vis_pyvista_model,
     }
     vis_type = st.selectbox("类型", options=list(vis_funcs.keys()), label_visibility="collapsed")
