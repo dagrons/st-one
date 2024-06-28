@@ -38,7 +38,7 @@ if __name__ == "__main__":
         "房贷计算器": {
             "func": mortage_caculator,
         },
-        "图表可视化": {
+        "可视化": {
             "func": vis,
         }
     }
