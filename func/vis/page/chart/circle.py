@@ -32,3 +32,7 @@ def vis_circle():
                 },
             )
             """)
+
+
+if __name__ == "__main__":
+    vis_circle()

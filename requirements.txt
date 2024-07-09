@@ -39,5 +39,5 @@ vtk
 trame-vuetify
 trame-vtk
 stpyvista
-
+plotly
 

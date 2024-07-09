@@ -35,18 +35,18 @@ if __name__ == "__main__":
         "知识库检索": {
             "func": retrieval_page,
         },
-        "房贷计算器": {
-            "func": mortage_caculator,
-        },
-        "可视化": {
+        "数据可视化": {
             "func": vis,
         }
     }
+    if st.query_params.get("mode") == "all":
+        pages["房贷计算器"] = {
+            "func": mortage_caculator,
+        }
     with st.sidebar:
-        st.write(f"mode: {os.getenv('mode')}")
         st.image(
             os.path.join(
-                "img", "nyan_cat.png"
+                "img", "logo.png"
             ),
             use_column_width=True
         )
