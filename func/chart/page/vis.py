@@ -1,10 +1,10 @@
 import streamlit as st
 
-from func.vis.page.chart.bar import vis_bar
-from func.vis.page.chart.circle import vis_circle
-from func.vis.page.chart.line import vis_line
-from func.vis.page.chart.pie import vis_pie
-from func.vis.page.chart.scatter import vis_scatter
+from func.chart.page.chart.bar import vis_bar
+from func.chart.page.chart.circle import vis_circle
+from func.chart.page.chart.line import vis_line
+from func.chart.page.chart.pie import vis_pie
+from func.chart.page.chart.scatter import vis_scatter
 
 
 def vis():

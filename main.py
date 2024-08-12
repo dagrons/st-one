@@ -8,7 +8,7 @@ from func.chore.page.mortage_caculator import mortage_caculator
 from func.llm_chatbot.page.llm_chatbot import llm_chatbot_page
 from func.llm_chatbot.page.retriver import retrieval_page
 from func.log_analyzer.page.log_analyzer import log_analyzer
-from func.vis.page.vis import vis
+from func.chart.page.vis import vis
 
 if __name__ == "__main__":
     dotenv.load_dotenv()
