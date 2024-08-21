@@ -12,7 +12,7 @@ def llm_chatbot_page():
     with c1:
         clear_history = st.button(":wastebasket:", type="secondary")
     with st.sidebar:
-        origin_selected_model = st.selectbox("语言模型", options=['default', 'Qwen2-0.5B-Chat',  'gpt-4', 'Qwen2-7B-Instruct', 'Qwen1.5-0.5B-Chat'])
+        origin_selected_model = st.selectbox("语言模型", options=['default', 'chatgpt-4o-latest', 'Qwen2-0.5B-Chat',  'gpt-4', 'Qwen2-7B-Instruct', 'Qwen1.5-0.5B-Chat'])
         if origin_selected_model == "default":
             selected_model = "gpt-4o"
         else:
