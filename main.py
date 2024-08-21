@@ -14,8 +14,6 @@ if __name__ == "__main__":
     dotenv.load_dotenv()
     st.set_page_config(
         "One",
-        page_title="one",
-        page_icon="img/logo.png",
         initial_sidebar_state="expanded",
     )
 
