@@ -5,8 +5,6 @@ import streamlit as st
 from streamlit_option_menu import option_menu
 
 from func.chore.page.mortage_caculator import mortage_caculator
-from func.llm_chatbot.page.llm_chatbot import llm_chatbot_page
-from func.llm_chatbot.page.retriver import retrieval_page
 from func.chart.page.vis import vis
 
 if __name__ == "__main__":
@@ -31,12 +29,6 @@ if __name__ == "__main__":
     pages = {
         "房贷计算器": {
             "func": mortage_caculator,
-        },
-        "QA问答": {
-            "func": llm_chatbot_page,
-        },
-        "知识库检索": {
-            "func": retrieval_page,
         },
         "数据可视化": {
             "func": vis,
