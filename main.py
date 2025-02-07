@@ -29,6 +29,9 @@ if __name__ == "__main__":
     """, unsafe_allow_html=True)
 
     pages = {
+        "房贷计算器": {
+            "func": mortage_caculator,
+        },
         "QA问答": {
             "func": llm_chatbot_page,
         },
@@ -37,12 +40,8 @@ if __name__ == "__main__":
         },
         "数据可视化": {
             "func": vis,
-        }
+        },
     }
-    if st.query_params.get("mode") == "all":
-        pages["房贷计算器"] = {
-            "func": mortage_caculator,
-        }
     with st.sidebar:
         st.image(
             os.path.join(
