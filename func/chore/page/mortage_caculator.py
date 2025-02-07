@@ -20,7 +20,7 @@ def calculate_equal_payment(loan_amount, annual_rate, months):
     return [repayment] * months
 
 
-def mortage_caculator():
+def mortgage_caculator():
     st.title("房贷计算器")
     st.sidebar.header("贷款信息")
     loan1 = st.sidebar.number_input("商业贷款额", min_value=0.0, value=0.0)

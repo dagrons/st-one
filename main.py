@@ -4,7 +4,7 @@ import dotenv
 import streamlit as st
 from streamlit_option_menu import option_menu
 
-from func.chore.page.mortage_caculator import mortage_caculator
+from func.chore.page.mortage_caculator import mortgage_caculator
 from func.chart.page.vis import vis
 
 if __name__ == "__main__":
@@ -28,7 +28,7 @@ if __name__ == "__main__":
 
     pages = {
         "房贷计算器": {
-            "func": mortage_caculator,
+            "func": mortgage_caculator,
         },
         "数据可视化": {
             "func": vis,
